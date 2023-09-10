@@ -6,12 +6,17 @@
     <title>Sorting Algorithm Visualizer</title>
 </head>
 <body>
-    <h1>Sorting Algorithm Visualizer</h1>
-    <form id="array-form">
-        <label for="array-input">Enter an array:</label>
-        <input type="text" id="array-input" placeholder="[4, 2, 1, 3, 5]" />
-        <button type="button" id="bubble-sort-btn">Bubble Sort</button>
-    </form>
+    <h1>Bubble Sort Visualizer</h1>
+    <label for="num-elements">Number of Elements:</label>
+    <input type="number" id="num-elements" placeholder="50" min="1" />
+    <button type="button" id="bubble-sort-btn">Bubble Sort</button>
+    
+    <label for="frame-rate-slider">Frame Rate:</label>
+    <input type="range" id="frame-rate-slider" min="1" max="60" value="5">
+    <span id="frame-rate-display">5</span> FPS
+
+    <button type="button" id="pause-btn">Pause</button>
+
     <div id="visualization-area">
         <!-- Area where the sorting visualization will happen -->
     </div>

@@ -34,8 +34,8 @@ button:hover {
 /* Visualization area */
 #visualization-area {
     width: 80%;
-    max-width: 900px;
+    max-width: 80%;
     height: auto;
-    border: 2px solid #ccc;
+    border: 0px solid #ccc;
     position: relative;
 }

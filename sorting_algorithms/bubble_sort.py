@@ -8,7 +8,3 @@ def bubble_sort(arr):
                 arr[j], arr[j+1] = arr[j+1], arr[j]
     steps.append(arr.copy())  # Capture the final sorted array
     return arr, steps
-
-steps = []
-arr = [4, 2, 7, 1, 9]
-bubble_sort(arr)
