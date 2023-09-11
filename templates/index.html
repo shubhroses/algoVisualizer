@@ -1,25 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="https://github.com/processing/p5.js/releases/download/v1.7.0/p5.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-    <title>Sorting Algorithm Visualizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/menu.css') }}">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap JavaScript and Popper.js (optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"></script>
+    
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <div class="navbar-header">
+          </div>
+        </div>
+      </nav>
+    <title>Sorting Algorithms</title>
 </head>
 <body>
-    <h1>Bubble Sort Visualizer</h1>
-    <label for="num-elements">Number of Elements:</label>
-    <input type="number" id="num-elements" placeholder="50" min="1" />
-    <button type="button" id="bubble-sort-btn">Bubble Sort</button>
-    
-    <label for="frame-rate-slider">Frame Rate:</label>
-    <input type="range" id="frame-rate-slider" min="1" max="60" value="5">
-    <span id="frame-rate-display">5</span> FPS
-
-    <button type="button" id="pause-btn">Pause</button>
-
-    <div id="visualization-area">
-        <!-- Area where the sorting visualization will happen -->
+    <div class="container">
+        <div class="jumbotron"> 
+            <h1 class="display-4">Sorting Algorithms</h1>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/bubble_sort">Bubble Sort</a></li> <!-- TODO add dev when moving to aws -->
+                    <li><a href="/selection_sort">Selection Sort</a></li> <!-- TODO add dev when moving to aws -->
+                    <!-- Add more algorithms here -->
+                </ul>
+            </nav>
+        </div>
     </div>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/menu.js') }}"></script>
 </body>
 </html>
+
+
+
+
