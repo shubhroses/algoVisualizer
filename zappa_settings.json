@@ -1,0 +1,9 @@
+{
+    "dev": {
+        "app_function": "app.app",
+        "profile_name": "shubhrose",
+        "project_name": "algovisualizer",
+        "runtime": "python3.8",
+        "s3_bucket": "zappa-hdnuo8rh2"
+    }
+}

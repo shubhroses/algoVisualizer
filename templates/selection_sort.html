@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://github.com/processing/p5.js/releases/download/v1.7.0/p5.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap JavaScript and Popper.js (optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button id="back-to-home" class="btn btn-primary" >Back to Home</button>
+          </div>
+        </div>
+      </nav>
+
+    <title>Sorting Algorithm Visualizer</title>
+
+</head>
+<body style="background-color: #659DBD;">
+    <div class="container">
+        <div class="jumbotron">
+            <h1 style="font-weight: 700;">Selection Sort</h1>
+            <hr class="my-4">
+            <label for="num-elements">Number of Elements:</label>
+            <input type="number" id="num-elements" placeholder="25" min="1" />
+            <button type="button" id="sort-btn" class="btn btn-primary">Selection Sort</button>
+            <button type="button" id="pause-btn" class="btn btn-primary">Pause</button>
+            
+            <input type="range" id="frame-rate-slider" min="1" max="5000" value="100" style="width: 100%;">
+            <span id="frame-rate-display">100</span> FPS
+        </div>
+    </div>
+    
+    <div id="visualization-area">
+        <!-- Area where the sorting visualization will happen -->
+    </div>
+
+    <!-- Add this new section for the description -->
+    <div class="container">
+        <div class="description-section">
+            <h2>Description</h2>
+            <p>
+                Selection Sort is a simple sorting algorithm that sorts an array by repeatedly finding the minimum
+                element from the unsorted part of the array and swapping it with the first unsorted element.
+            </p>
+            <p>
+                Time Complexity: O(n<sup>2</sup>) for worst-case, average-case, and best-case.
+            </p>
+        </div>
+    </div>
+
+    <!-- Code Section -->
+    <div class="container">
+        <div class="code-section">
+            <h2 style="color: white;">Implementation</h2>
+            <ul class="nav nav-tabs" id="codeTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="javascript-tab" data-bs-toggle="tab" href="#javascript" role="tab">JavaScript</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="python-tab" data-bs-toggle="tab" href="#python" role="tab">Python</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="java-tab" data-bs-toggle="tab" href="#java" role="tab">Java</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="javascript" role="tabpanel">
+                    <pre><code class="language-javascript">
+    function selectionSort(arr) {
+        let n = arr.length;
+        for (let i = 0; i < n - 1; i++) {
+            let minIndex = i;
+            for (let j = i + 1; j < n; j++) {
+                if (arr[j] < arr[minIndex]) {
+                    minIndex = j;
+                }
+            }
+            [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
+        }
+    }
+                    </code></pre>
+                </div>
+                <div class="tab-pane fade" id="python" role="tabpanel">
+                    <pre><code class="language-python">
+    def selection_sort(arr):
+        n = len(arr)
+        for i in range(n):
+            min_idx = i
+            for j in range(i+1, n):
+                if arr[j] < arr[min_idx]:
+                    min_idx = j
+            arr[i], arr[min_idx] = arr[min_idx], arr[i]
+                    </code></pre>
+                </div>
+                <div class="tab-pane fade" id="java" role="tabpanel">
+                    <pre><code class="language-java">
+    public void selectionSort(int arr[]) {
+        int n = arr.length;
+        for (int i = 0; i < n - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < n; j++) {
+                if (arr[j] < arr[minIndex]) {
+                    minIndex = j;
+                }
+            }
+            int temp = arr[minIndex];
+            arr[minIndex] = arr[i];
+            arr[i] = temp;
+        }
+    }
+                    </code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add these just before your PrismJS include -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/components/prism-java.min.js"></script>
+
+    <!-- Then include PrismJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/prism.min.js"></script>
+
+
+    <script src="{{ url_for('static', filename='js/selection_sort.js') }}"></script>
+</body>
+</html>
