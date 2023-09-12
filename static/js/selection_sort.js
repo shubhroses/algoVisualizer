@@ -6,57 +6,19 @@ let framerate = 200;
 let isPaused = false;
 
 function setup() {
-    let canvas = createCanvas(windowWidth, 500);
+    let canvas = createCanvas(windowWidth, windowHeight * 0.8);
     canvas.parent('visualization-area');
     frameRate(5); 
 
     initialArray = generateRandomArray(lengthOfArray); // Generate initial random array
-    const colorFlags = new Array(lengthOfArray).fill(0);  // 0 for white, 1 for red
-    steps = [{ array: initialArray, colorFlags: colorFlags }];
+    
+    steps = [{ array: initialArray, colorFlags: -1 }];
     currentIndex = 0;  // Reset the index
 }
 
 function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
+    resizeCanvas(windowWidth, windowHeight*0.8);
 }  
-
-function draw() {
-    if (isPaused) {
-        return;
-    }
-    background("#659DBD");  // Set background color to grey
-    if (steps.length > 0) {
-        currentIndex = min(currentIndex, steps.length - 1);
-        
-        const { array: arr, colorFlags } = steps[currentIndex];
-        let barWidth = width / arr.length;
-
-        for (let i = 0; i < arr.length; i++) {
-            let barHeight = map(arr[i], 0, Math.max(...arr), 0, height);
-
-            // Calculate hue based on the value of the bar
-            let hueValue = map(arr[i], 0, Math.max(...arr), 0, 360);
-
-            if (colorFlags[i] === 1) {
-                fill("#E83100");  // Red for swapping
-            } else {
-                colorMode(HSL); // switch to HSL color mode
-                fill(hueValue, 100, 50); // HSL representation
-                colorMode(RGB); // switch back to RGB color mode
-            }
-
-            rect(i * barWidth, height - barHeight, barWidth, barHeight);
-        }
-
-        if (currentIndex < steps.length - 1) {
-            currentIndex++;
-        }
-    }
-}
-
-
-
-
 
 function generateRandomArray(length) {
     // Generate an array from 1 to `length`
@@ -70,96 +32,118 @@ function generateRandomArray(length) {
     return arr;
 }
 
+function drawBar(i, barWidth, barHeight, hueValue, colorFlag) {
+    if (i === colorFlag) {
+        fill(0);
+    } else {
+        fill(hueValue, 100, 50);
+    }
+    rect(i * barWidth, height - barHeight, barWidth, barHeight);
+}
+
+function drawGradient(startY, topColor, bottomColor) {
+    for (let y = startY; y <= height; y++) {
+        let inter = map(y, startY, height, 0, 1);
+        let c = lerpColor(topColor, bottomColor, inter);
+        stroke(c);
+        line(0, y, width, y);
+    }
+}
+
+function draw() {
+    if (!steps || steps.length === 0) return;
+    background("white");
+
+    const { array: arr, colorFlag } = steps[currentIndex];
+    let barWidth = width / arr.length;
+
+    colorMode(HSL);
+    for (let i = 0; i < arr.length; i++) {
+        let barHeight = map(arr[i], 0, lengthOfArray, 0, height);
+        let hueValue = map(arr[i], 0, lengthOfArray, 0, 360);
+        drawBar(i, barWidth, barHeight, hueValue, colorFlag);
+    }
+    colorMode(RGB);
+
+    // Gradient Overlay
+    let startY = height * 0.8;
+    let topColor = color(255, 255, 255, 0);
+    let bottomColor = color(255, 255, 255);
+    drawGradient(startY, topColor, bottomColor);
+
+    if (currentIndex < steps.length - 1) {
+        currentIndex = Math.min(currentIndex + Math.ceil(0.01 * steps.length), steps.length - 1);
+    }
+}
+
 function sortSteps(arr) {
     const steps = [];
-    const n = arr.length;
-    let colorFlags = new Array(n).fill(0); // Initialize colorFlags with 0s
-
-    for (let i = 0; i < n - 1; i++) {
-        let minIndex = i;
-
-        // Unmark all red columns before searching for the minimum
-        colorFlags.fill(0, i, n);
+    
+    for (let i = 0; i < arr.length; i++) {
+        let minIndex = i;  // Start with the first element in the unsorted portion
         
-        for (let j = i + 1; j < n; j++) {
+        for (let j = i + 1; j < arr.length; j++) {
+            // Save this step before checking for minimum
+            steps.push({ array: arr.slice(), colorFlag: minIndex });
+            
             if (arr[j] < arr[minIndex]) {
                 minIndex = j;
             }
         }
-
-        // Mark as red before the swap
-        colorFlags[minIndex] = 1;
-        steps.push({ array: [...arr], colorFlags: [...colorFlags] });
-
+        
+        // Swap the minimum element found with the first unsorted element
         if (minIndex !== i) {
-            // If the minimum element is not already at the beginning, swap
             [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
-
-            // Unmark the swapped column
-            colorFlags[minIndex] = 0;
-        } else {
-            // If the minimum element is already at the beginning, mark as green
-            colorFlags[i] = 2;
         }
         
-        // Always mark the sorted column as green
-        colorFlags[i] = 2;
-        steps.push({ array: [...arr], colorFlags: [...colorFlags] });
+        // Save the final state of this iteration
+        steps.push({ array: arr.slice(), colorFlag: minIndex });
     }
-
-    // Mark the last column as green since it's also sorted
-    colorFlags[n - 1] = 2;
-    steps.push({ array: [...arr], colorFlags: [...colorFlags] });  // Capture the final sorted array
-
     return steps;
 }
 
 
-
 document.addEventListener("DOMContentLoaded", function() {
-    const sortBtn = document.getElementById("sort-btn");
-    const numElementsInput = document.getElementById("num-elements");
-    const visualizationArea = document.getElementById("visualization-area");
+    const bubbleSortBtn = document.getElementById("bubble-sort-btn");
+    const numElementsInput = document.getElementById("element-slider");
     const frameRateSlider = document.getElementById("frame-rate-slider");
     const frameRateDisplay = document.getElementById("frame-rate-display");
-
+    const elementDisplay = document.getElementById("elements-display");
     const backButton = document.getElementById("back-to-home");
-        backButton.addEventListener("click", function() {
-            window.location.href = "/";  //TODO Update this
-        });
-        
+
+    backButton.addEventListener("click", function() {
+        window.location.href = "/";
+    });
+
     frameRateSlider.addEventListener("input", function() {
         const newFrameRate = Number(frameRateSlider.value);
-        frameRate(newFrameRate);
+        framerate = newFrameRate;
         frameRateDisplay.innerText = newFrameRate;
     });
 
-    numElementsInput.addEventListener("change", function() {
-        const numElements = Number(numElementsInput.value || lengthOfArray);
+    numElementsInput.addEventListener("input", function() {
+        const numElements = Number(numElementsInput.value);
         initialArray = generateRandomArray(numElements);
-        const colorFlags = new Array(numElements).fill(0);
-        // Update steps and currentIndex to visualize new array
-        steps = [{ array: initialArray, colorFlags: colorFlags }];
+        steps = [{ array: initialArray, colorFlags: -1 }];
         currentIndex = 0;
         lengthOfArray = numElements;
+        elementDisplay.innerText = numElements;
     });
 
-    sortBtn.addEventListener("click", function() {
-        // Unpause the animation and update button text
+    bubbleSortBtn.addEventListener("click", function() {
         isPaused = false;
-        pauseBtn.innerHTML = "Pause";
-        sortBtn.innerHTML = "Reset";
-        
+        document.getElementById("pause-btn").innerHTML = "Pause";
+        bubbleSortBtn.innerHTML = "Reset";
+
         steps = sortSteps([...initialArray]);
-        currentIndex = 0;  // Reset the index
-    
-        // Generate a new random array for future use
+        currentIndex = 0;
+
         initialArray = generateRandomArray(lengthOfArray);
     });
 
     const pauseBtn = document.getElementById("pause-btn");
     pauseBtn.addEventListener("click", function() {
         isPaused = !isPaused;
-        this.innerHTML = isPaused ? "Resume" : "Pause";     
+        this.innerHTML = isPaused ? "Resume" : "Pause";
     });
 });

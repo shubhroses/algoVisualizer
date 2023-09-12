@@ -23,18 +23,21 @@
     <title>Sorting Algorithm Visualizer</title>
 
 </head>
-<body style="background-color: #659DBD;">
+<body style="background-color: white;">
     <div class="container">
         <div class="jumbotron">
             <h1 style="font-weight: 700;">Bubble Sort</h1>
             <hr class="my-4">
-            <label for="num-elements">Number of Elements:</label>
-            <input type="number" id="num-elements" placeholder="25" min="1" />
+            
             <button type="button" id="bubble-sort-btn" class="btn btn-primary">Bubble Sort</button>
             <button type="button" id="pause-btn" class="btn btn-primary">Pause</button>
-            
-            <input type="range" id="frame-rate-slider" min="1" max="5000" value="100" style="width: 100%;">
+                        
+            <input type="range" id="frame-rate-slider" min="1" max="500" value="100" style="width: 70%;">
             <span id="frame-rate-display">100</span> FPS
+
+            <input type="range" id="element-slider" min="1" max="500" value="100" style="width: 100%;">
+            <span id="elements-display">25</span> Bars
+
         </div>
     </div>
     
@@ -118,13 +121,6 @@ public void bubbleSort(int arr[]) {
             </div>
         </div>
     </div>
-    <!-- Add these just before your PrismJS include -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/components/prism-python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/components/prism-java.min.js"></script>
-
-    <!-- Then include PrismJS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/prism.min.js"></script>
-
 
     <script src="{{ url_for('static', filename='js/bubble_sort.js') }}"></script>
 </body>
