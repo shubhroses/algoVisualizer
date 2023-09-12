@@ -56,3 +56,16 @@ button:hover {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+.sleek-title {
+    font-family: 'Roboto', sans-serif; /* Using a sleek font */
+    font-weight: 500; /* Lighter font weight */
+    font-size: 3.5em; /* Larger font size */
+    letter-spacing: 1px; /* Tighter letter spacing */
+    margin-bottom: 5px; /* Spacing below the title */
+    color: #333; /* Subdued color */
+    text-transform: uppercase; /* All letters uppercase */
+    text-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1); /* Subtle text shadow */
+  }
+  
+ 

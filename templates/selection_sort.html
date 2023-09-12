@@ -11,11 +11,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"></script>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
 
     <nav class="navbar navbar-inverse">
         <div class="container-fluid">
           <div class="navbar-header">
-            <button id="back-to-home" class="btn btn-primary" >Back to Home</button>
+            <button id="back-to-home" class="btn btn-dark transition" >Home</button>
           </div>
         </div>
       </nav>
@@ -26,7 +27,7 @@
 <body style="background-color: white;">
     <div class="container">
         <div class="jumbotron">
-            <h1 style="font-weight: 700;">Selection Sort</h1>
+            <h1 class="sleek-title">Selection Sort</h1>
             <hr class="my-4">
 
             <div class="btn-group" role="group" id="fps-button-group">
@@ -45,11 +46,11 @@
               
               
 
-            <input type="range" id="element-slider" min="1" max="500" value="100" style="width: 92%;">
+            <input type="range" id="element-slider" min="1" max="500" value="100" style="width: 92%; color: #000;">
             <span id="elements-display">25</span> Bars
 
-            <button type="button" id="start-pause" class="btn btn-primary">Start</button>
-            <button type="button" id="reset-btn" class="btn btn-primary">Reset</button>
+            <button type="button" id="start-pause" class="btn btn-dark transition">Start</button>
+            <button type="button" id="reset-btn" class="btn btn-dark transition">Reset</button>
             
         </div>
     </div>

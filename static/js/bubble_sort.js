@@ -6,7 +6,7 @@ let framerate = 5;
 let isPaused = false;
 
 function setup() {
-    let canvas = createCanvas(windowWidth, windowHeight * 0.8);
+    let canvas = createCanvas(windowWidth, windowHeight * 0.70);
     canvas.parent('visualization-area');
     frameRate(framerate);
   
@@ -16,7 +16,7 @@ function setup() {
 }
 
 function windowResized() {
-    resizeCanvas(windowWidth, windowHeight * 0.85);
+    resizeCanvas(windowWidth, windowHeight * 0.70);
 }
 
 function generateRandomArray(length) {
@@ -51,7 +51,7 @@ function drawFrame() {
     background("white");
   
     const { array: arr, colorFlag } = steps[currentIndex];
-    let barWidth = Math.ceil(width / arr.length);
+    let barWidth = windowWidth / arr.length;
   
     colorMode(HSL);
     noStroke();  // Disable stroke
@@ -85,19 +85,24 @@ function draw() {
   
 
 function sortSteps(arr) {
-  const steps = [];
-  const tempArr = [...arr];
-  
-  for (let i = 0; i < tempArr.length; i++) {
-    for (let j = 0; j < tempArr.length - i - 1; j++) {
-      let colorFlag = j;
-      steps.push({ array: [...tempArr], colorFlag: colorFlag });
-      
-      if (tempArr[j] > tempArr[j + 1]) {
-        [tempArr[j], tempArr[j + 1]] = [tempArr[j + 1], tempArr[j]];
-      }
+    const steps = [];
+    const tempArr = [...arr];
+    
+    for (let i = 0; i < tempArr.length; i++) {
+        for (let j = 0; j < tempArr.length - i - 1; j++) {
+        let colorFlag = j;
+        steps.push({ array: [...tempArr], colorFlag: colorFlag });
+        
+        if (tempArr[j] > tempArr[j + 1]) {
+            [tempArr[j], tempArr[j + 1]] = [tempArr[j + 1], tempArr[j]];
+        }
+        }
     }
-  }
+    // Set colorFlag of the last step to -1
+    if (steps.length > 0) {
+        steps[steps.length - 1].colorFlag = -1;
+    }
+
   return steps;
 }
 
