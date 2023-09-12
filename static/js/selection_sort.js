@@ -2,13 +2,13 @@ let steps = [];  // To hold the steps from the API
 let currentIndex = 0;  // To keep track of the current step being visualized
 let initialArray = []; // Add this line
 let lengthOfArray = 25;
-let framerate = 200;
+let framerate = 5;
 let isPaused = false;
 
 function setup() {
     let canvas = createCanvas(windowWidth, windowHeight * 0.8);
     canvas.parent('visualization-area');
-    frameRate(5); 
+    frameRate(framerate); 
 
     initialArray = generateRandomArray(lengthOfArray); // Generate initial random array
     
@@ -17,7 +17,7 @@ function setup() {
 }
 
 function windowResized() {
-    resizeCanvas(windowWidth, windowHeight*0.8);
+    resizeCanvas(windowWidth, windowHeight*0.85);
 }  
 
 function generateRandomArray(length) {
@@ -50,29 +50,36 @@ function drawGradient(startY, topColor, bottomColor) {
     }
 }
 
-function draw() {
+function drawFrame() {
     if (!steps || steps.length === 0) return;
     background("white");
-
+  
     const { array: arr, colorFlag } = steps[currentIndex];
-    let barWidth = width / arr.length;
-
+    let barWidth = Math.ceil(width / arr.length);
+  
     colorMode(HSL);
+    noStroke();  // Disable stroke
     for (let i = 0; i < arr.length; i++) {
-        let barHeight = map(arr[i], 0, lengthOfArray, 0, height);
-        let hueValue = map(arr[i], 0, lengthOfArray, 0, 360);
-        drawBar(i, barWidth, barHeight, hueValue, colorFlag);
+      let barHeight = map(arr[i], 0, lengthOfArray, 0, height);
+      let hueValue = map(arr[i], 0, lengthOfArray, 0, 360);
+      drawBar(i, barWidth, barHeight, hueValue, colorFlag);
     }
     colorMode(RGB);
-
+  
     // Gradient Overlay
     let startY = height * 0.8;
     let topColor = color(255, 255, 255, 0);
     let bottomColor = color(255, 255, 255);
     drawGradient(startY, topColor, bottomColor);
+}
+  
+function draw() {
+    if (isPaused) return;
+    
+    drawFrame();
 
     if (currentIndex < steps.length - 1) {
-        currentIndex = Math.min(currentIndex + Math.ceil(0.01 * steps.length), steps.length - 1);
+        currentIndex = Math.min(currentIndex + Math.ceil(0.04 * steps.length), steps.length - 1);
     }
 }
 
@@ -102,23 +109,31 @@ function sortSteps(arr) {
     return steps;
 }
 
-
 document.addEventListener("DOMContentLoaded", function() {
-    const bubbleSortBtn = document.getElementById("bubble-sort-btn");
+    const startPauseBtn = document.getElementById("start-pause");
     const numElementsInput = document.getElementById("element-slider");
-    const frameRateSlider = document.getElementById("frame-rate-slider");
-    const frameRateDisplay = document.getElementById("frame-rate-display");
+    const fpsButtonGroup = document.getElementById("fps-button-group");
     const elementDisplay = document.getElementById("elements-display");
+    const resetBtn = document.getElementById("reset-btn");
     const backButton = document.getElementById("back-to-home");
 
     backButton.addEventListener("click", function() {
         window.location.href = "/";
     });
 
-    frameRateSlider.addEventListener("input", function() {
-        const newFrameRate = Number(frameRateSlider.value);
-        framerate = newFrameRate;
-        frameRateDisplay.innerText = newFrameRate;
+    fpsButtonGroup.addEventListener("click", function(event) {
+        const target = event.target;
+        if (target.tagName === 'BUTTON') {
+          // Remove the active class from all buttons
+          document.querySelectorAll('#fps-button-group .btn').forEach(btn => btn.classList.remove('active'));
+    
+          // Add the active class to the clicked button
+          target.classList.add('active');
+    
+          // Change the frame rate
+          const newFrameRate = parseInt(target.getAttribute('data-fps'), 10);
+          frameRate(newFrameRate);
+        }
     });
 
     numElementsInput.addEventListener("input", function() {
@@ -128,22 +143,41 @@ document.addEventListener("DOMContentLoaded", function() {
         currentIndex = 0;
         lengthOfArray = numElements;
         elementDisplay.innerText = numElements;
+
+        // Reset the Start/Pause button label to "Start"
+        startPauseBtn.innerHTML = "Start";
+        isPaused = true;
+        drawFrame();
     });
 
-    bubbleSortBtn.addEventListener("click", function() {
-        isPaused = false;
-        document.getElementById("pause-btn").innerHTML = "Pause";
-        bubbleSortBtn.innerHTML = "Reset";
+    // Start/Pause button logic
+    startPauseBtn.addEventListener("click", function() {
+        if (startPauseBtn.innerHTML === "Start") {
+            // Set to Pause and start the sorting
+            startPauseBtn.innerHTML = "Pause";
+            isPaused = false;
 
-        steps = sortSteps([...initialArray]);
+            // If not yet started, initialize sorting
+            if (currentIndex === 0) {
+                steps = sortSteps([...initialArray]);
+            }
+
+        } else if (startPauseBtn.innerHTML === "Pause") {
+            // Set to Start and pause the sorting
+            startPauseBtn.innerHTML = "Start";
+            isPaused = true;
+        }
+    });
+
+    // Reset button logic
+    resetBtn.addEventListener("click", function() {
+        // Reset everything
+        startPauseBtn.innerHTML = "Start";
+        isPaused = true;
+
+        initialArray = generateRandomArray(lengthOfArray); // Moved up
+        steps = [{ array: [...initialArray], colorFlags: -1 }]; // Now uses the new initialArray
         currentIndex = 0;
-
-        initialArray = generateRandomArray(lengthOfArray);
-    });
-
-    const pauseBtn = document.getElementById("pause-btn");
-    pauseBtn.addEventListener("click", function() {
-        isPaused = !isPaused;
-        this.innerHTML = isPaused ? "Resume" : "Pause";
+        drawFrame();
     });
 });

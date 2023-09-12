@@ -26,17 +26,31 @@
 <body style="background-color: white;">
     <div class="container">
         <div class="jumbotron">
-            <h1 style="font-weight: 700;">Bubble Sort</h1>
+            <h1 style="font-weight: 700;">Selection Sort</h1>
             <hr class="my-4">
-            
-            <button type="button" id="bubble-sort-btn" class="btn btn-primary">Bubble Sort</button>
-            <button type="button" id="pause-btn" class="btn btn-primary">Pause</button>
-                        
-            <input type="range" id="frame-rate-slider" min="1" max="500" value="100" style="width: 70%;">
-            <span id="frame-rate-display">100</span> FPS
 
-            <input type="range" id="element-slider" min="1" max="500" value="100" style="width: 100%;">
+            <div class="btn-group" role="group" id="fps-button-group">
+                <button type="button" class="btn btn-secondary" data-fps="1">1 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="2">2 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="3">3 fps</button>
+                <button type="button" class="btn btn-secondary active" data-fps="5">5 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="10">10 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="25">25 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="50">50 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="100">100 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="500">500 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="1000">1000 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="2000">2000 fps</button>
+              </div>
+              
+              
+
+            <input type="range" id="element-slider" min="1" max="500" value="100" style="width: 92%;">
             <span id="elements-display">25</span> Bars
+
+            <button type="button" id="start-pause" class="btn btn-primary">Start</button>
+            <button type="button" id="reset-btn" class="btn btn-primary">Reset</button>
+            
         </div>
     </div>
     
