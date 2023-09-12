@@ -21,5 +21,10 @@ def selection_sort():
     # your logic here
     return render_template('selection_sort.html')
 
+@app.route('/merge_sort')
+def merge_sort():
+    # your logic here
+    return render_template('merge_sort.html')
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5001)
