@@ -64,13 +64,31 @@
         <div class="description-section">
             <h2>Description</h2>
             <p>
-                Bubble Sort is a simple sorting algorithm that repeatedly steps through the list,
-                compares adjacent elements and swaps them if they are in the wrong order.
-                The pass through the list is repeated until the list is sorted.
+                Bubble Sort is one of the simplest sorting algorithms, commonly used for educational purposes. Its name comes from the way smaller or larger elements "bubble" to the top or bottom of the list during the sorting process. 
             </p>
+
+            <h3>How it Works:</h3>
+            <ol>
+                <li><strong>Iterate:</strong> The algorithm iterates through the list from the beginning to the end, comparing adjacent elements.</li>
+                <li><strong>Swap:</strong> If the adjacent elements are in the wrong order, they are swapped.</li>
+                <li><strong>Repeat:</strong> This process is repeated for multiple passes through the list until no more swaps are needed, indicating that the list is sorted.</li>
+            </ol>
+
             <p>
-                Time Complexity: O(n<sup>2</sup>) for worst-case and average-case, O(n) for best-case (already sorted list).
+                The algorithm can be optimized by noticing that the largest element "bubbles up" to the last position on the first pass, the second largest on the second pass, and so on. This means that each subsequent pass can consider one less element.
             </p>
+
+            <h3>Key Features:</h3>
+            <ul>
+                <li><strong>Stable Sort:</strong> Similar to Merge Sort, Bubble Sort is a stable sorting algorithm, meaning that elements with equal values remain in the same relative order after sorting.</li>
+                <li><strong>Adaptive:</strong> While Bubble Sort has a worst-case and average-case time complexity of O(n<sup>2</sup>), it can recognize an already sorted list and terminate early, making its best-case time complexity O(n).</li>
+                <li><strong>In-Place Sorting:</strong> Bubble Sort is an in-place sorting algorithm, meaning it doesn't require any additional memory for sorting. Therefore, its space complexity is O(1).</li>
+            </ul>
+
+            <p>
+                In summary, Bubble Sort is easy to understand and implement but generally inefficient for large datasets. It is best suited for educational purposes or for small lists where its simplicity is an advantage.
+            </p>
+
         </div>
     </div>
 

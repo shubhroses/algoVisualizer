@@ -64,13 +64,32 @@
         <div class="description-section">
             <h2>Description</h2>
             <p>
-                Merge Sort is a divide-and-conquer algorithm that splits an unsorted list into 
-                smaller sublists, sorts those sublists, and then merges them back together to produce 
-                a sorted list.
+                Merge Sort is a divide-and-conquer algorithm that was invented by John von Neumann in 1945. The primary idea is to break down a large, unsorted list into smaller and more manageable sublists, sort those sublists independently, and then combine (or merge) them back together to produce a fully sorted list. 
             </p>
+
+            <h3>How it Works:</h3>
+            <ol>
+                <li><strong>Divide:</strong> The list is divided into two halves until each sublist contains a single element. A list with a single element is considered sorted.</li>
+                <li><strong>Conquer (Sort):</strong> Once the division is done, each sublist is then merged back into a single sorted list.</li>
+                <li><strong>Merge:</strong> The merging step involves taking two sorted sublists and combining them in a sorted fashion. This is done by comparing the smallest elements of each sublist and inserting the smaller value into a new list, repeating this process until both sublists are empty.</li>
+            </ol>
+
             <p>
-                Time Complexity: O(n log n) for worst-case, average-case, and best-case.
+                The "divide-and-conquer" strategy allows Merge Sort to sort a list of <code>n</code> elements in O(n log n) time for the worst-case, average-case, and best-case scenarios. This is more efficient than algorithms like Bubble Sort or Insertion Sort, especially for larger lists.
             </p>
+
+            <h3>Key Features:</h3>
+            <ul>
+                <li><strong>Stable Sort:</strong> Equal elements remain in the same relative order after sorting.</li>
+                <li><strong>Non-Adaptive:</strong> Merge Sort takes the same amount of time to sort both sorted and unsorted lists, which is O(n log n).</li>
+                <li><strong>External Sorting:</strong> Because of its divide-and-conquer nature, Merge Sort is useful for sorting data sets that are too large to fit into a computer's main memory and must be stored on external storage devices.</li>
+                <li><strong>Space Complexity:</strong> Merge Sort is not an in-place sorting algorithm, meaning it requires additional memory space to hold the divided arrays. The space complexity is O(n).</li>
+            </ul>
+
+            <p>
+                In summary, Merge Sort is a highly efficient and stable sorting algorithm with a time complexity of O(n log n). However, it does come with the trade-off of requiring additional memory space.
+            </p>
+
         </div>
     </div>
 

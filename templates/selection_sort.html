@@ -63,12 +63,36 @@
         <div class="description-section">
             <h2>Description</h2>
             <p>
-                Selection Sort is a simple sorting algorithm that sorts an array by repeatedly finding the minimum
-                element from the unsorted part of the array and swapping it with the first unsorted element.
+                Selection Sort is another elementary sorting algorithm that's both intuitive to understand and straightforward to implement. It's named for its approach to sorting: it repeatedly "selects" the smallest (or largest) element from the unsorted portion of the list and swaps it to its final position in the sorted list.
             </p>
+
+            <h3>How it Works:</h3>
+            <ol>
+                <li><strong>Initialize:</strong> Start at the first element in the list and treat it as the minimum.</li>
+                <li><strong>Scan:</strong> Scan through the remaining elements to find if there is an element smaller than your current minimum.</li>
+                <li><strong>Swap:</strong> If a smaller element is found, swap it with the minimum.</li>
+                <li><strong>Increment:</strong> Move to the next element and repeat the process until the array is sorted.</li>
+            </ol>
+
+            <p>
+                After each pass, the smallest remaining element is placed at the front of the remaining list, and the 'unsorted' section of the list becomes smaller.
+            </p>
+
+            <h3>Key Features:</h3>
+            <ul>
+                <li><strong>Not Stable:</strong> Unlike Bubble Sort, Selection Sort is not a stable sorting algorithm, meaning that the relative order of equal elements may change during the sorting process.</li>
+                <li><strong>Not Adaptive:</strong> The algorithm does not adapt to the existing order of the elements. Therefore, it will make the same number of comparisons regardless of the initial arrangement of the elements, leading to a time complexity of O(n<sup>2</sup>) in all cases.</li>
+                <li><strong>In-Place Sorting:</strong> Like Bubble Sort, Selection Sort is also an in-place sorting algorithm and doesn't require additional memory for sorting, making its space complexity O(1).</li>
+            </ul>
+
+            <p>
+                In summary, while Selection Sort is easy to understand and implement, it's generally not suitable for large datasets due to its quadratic time complexity. However, it can be useful in scenarios where memory is a constraint, as it doesn't require additional storage.
+            </p>
+
             <p>
                 Time Complexity: O(n<sup>2</sup>) for worst-case, average-case, and best-case.
             </p>
+
         </div>
     </div>
 
