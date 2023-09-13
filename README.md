@@ -14,7 +14,7 @@ Sorting Algorithm Visualizer is a web application designed to help you understan
 
 **Live Website**: [Sorting Algorithm Visualizer](https://pfzk1lyri2.execute-api.us-east-1.amazonaws.com/dev/)
 
-![Demo Screenshot](your_demo_image_link_here)
+![Demo Screenshot](static/visualization.gif)
 
 ## Table of Contents
 
