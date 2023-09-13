@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const backButton = document.getElementById("back-to-home");
 
     backButton.addEventListener("click", function() {
-        window.location.href = "/";
+        window.location.href = "/dev/";
     });
 
     fpsButtonGroup.addEventListener("click", function(event) {
