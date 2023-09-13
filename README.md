@@ -101,7 +101,7 @@ This project is configured to be easily deployed on AWS Lambda using [Zappa](htt
     zappa deploy dev
     ```
 
-For more detailed information, please refer to [this guide](#your_detailed_zappa_guide_link_here).
+For more detailed information, please refer to [this guide](https://github.com/zappa/Zappa).
 
 ## Contributing
 
