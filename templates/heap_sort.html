@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://github.com/processing/p5.js/releases/download/v1.7.0/p5.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap JavaScript and Popper.js (optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button id="back-to-home" class="btn btn-dark transition" >Home</button>
+          </div>
+        </div>
+      </nav>
+
+    <title>Sorting Algorithm Visualizer</title>
+
+</head>
+<body style="background-color: white;">
+    <div class="container">
+        <div class="jumbotron">
+            <h1 class="display-4">Heap Sort</h1>
+
+            <div class="btn-group" role="group" id="fps-button-group">
+                <button type="button" class="btn btn-secondary" data-fps="1">1 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="2">2 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="3">3 fps</button>
+                <button type="button" class="btn btn-secondary active" data-fps="5">5 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="10">10 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="25">25 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="50">50 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="100">100 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="500">500 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="1000">1000 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="2000">2000 fps</button>
+              </div>
+              
+              
+
+            <input type="range" id="element-slider" min="1" max="500" value="100" style="width: 92%; color: #000;">
+            <span id="elements-display">25</span> Bars
+
+            <button type="button" id="start-pause" class="btn btn-dark transition">Start</button>
+            <button type="button" id="reset-btn" class="btn btn-dark transition">Reset</button>
+            
+        </div>
+    </div>
+    
+    <div id="visualization-area">
+        <!-- Area where the sorting visualization will happen -->
+    </div>
+
+    <!-- Add this new section for the description -->
+    <div class="container">
+        <div class="description-section">
+            <h2>Description</h2>
+            <p>
+                Heap Sort is an efficient comparison-based sorting algorithm. It's based on binary heap data structures. It sorts by creating a min/max heap from the data and then extracting the heap's root and rearranging the heap until it is empty, thereby creating a sorted array.
+            </p>
+    
+            <h3>How it Works:</h3>
+            <ol>
+                <li><strong>Heapify:</strong> Build a max heap from the given data.</li>
+                <li><strong>Extract:</strong> Swap the root of the max heap with the last element and heapify the reduced heap.</li>
+                <li><strong>Repeat:</strong> Continue the above step until the heap is empty.</li>
+            </ol>
+    
+            <p>
+                After each iteration, the largest remaining element is moved to the correct position in the array, and the heap size is reduced by one.
+            </p>
+    
+            <h3>Key Features:</h3>
+            <ul>
+                <li><strong>Not Stable:</strong> Heap Sort is not a stable sorting algorithm.</li>
+                <li><strong>Adaptive:</strong> Heap Sort adapts to the input and can take advantage of existing order.</li>
+                <li><strong>In-Place Sorting:</strong> Heap Sort is an in-place sorting algorithm and doesn't require additional memory for sorting, making its space complexity O(1).</li>
+            </ul>
+    
+            <p>
+                Heap Sort is generally faster than selection sort and bubble sort but may be slower than quicksort for some types of data.
+            </p>
+    
+            <p>
+                Time Complexity: O(n log n) for worst-case, average-case, and best-case.
+            </p>
+    
+        </div>
+    </div>
+    
+
+    <!-- Code Section -->
+    <div class="container">
+        <div class="code-section">
+            <h2 style="color: white;">Implementation</h2>
+            <ul class="nav nav-tabs" id="codeTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="javascript-tab" data-bs-toggle="tab" href="#javascript" role="tab">JavaScript</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="python-tab" data-bs-toggle="tab" href="#python" role="tab">Python</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="java-tab" data-bs-toggle="tab" href="#java" role="tab">Java</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="javascript" role="tabpanel">
+                    <pre><code class="language-javascript">
+    function heapify(arr, n, i) {
+        let largest = i;
+        let left = 2 * i + 1;
+        let right = 2 * i + 2;
+    
+        if (left < n && arr[left] > arr[largest]) {
+            largest = left;
+        }
+    
+        if (right < n && arr[right] > arr[largest]) {
+            largest = right;
+        }
+    
+        if (largest !== i) {
+            [arr[i], arr[largest]] = [arr[largest], arr[i]];
+            heapify(arr, n, largest);
+        }
+    }
+    
+    function heapSort(arr) {
+        let n = arr.length;
+    
+        for (let i = Math.floor(n / 2) - 1; i >= 0; i--) {
+            heapify(arr, n, i);
+        }
+    
+        for (let i = n - 1; i >= 0; i--) {
+            [arr[0], arr[i]] = [arr[i], arr[0]];
+            heapify(arr, i, 0);
+        }
+    }
+                    </code></pre>
+                </div>
+                
+                <div class="tab-pane fade" id="python" role="tabpanel">
+                    <pre><code class="language-python">
+    def heapify(arr, n, i):
+        largest = i
+        l = 2 * i + 1
+        r = 2 * i + 2
+    
+        if l < n and arr[i] < arr[l]:
+            largest = l
+    
+        if r < n and arr[largest] < arr[r]:
+            largest = r
+    
+        if largest != i:
+            arr[i], arr[largest] = arr[largest], arr[i]
+            heapify(arr, n, largest)
+    
+    def heap_sort(arr):
+        n = len(arr)
+    
+        for i in range(n // 2 - 1, -1, -1):
+            heapify(arr, n, i)
+    
+        for i in range(n-1, 0, -1):
+            arr[i], arr[0] = arr[0], arr[i]
+            heapify(arr, i, 0)
+                    </code></pre>
+                </div>
+                
+                <div class="tab-pane fade" id="java" role="tabpanel">
+                    <pre><code class="language-java">
+    public void heapify(int arr[], int n, int i) {
+        int largest = i;
+        int l = 2 * i + 1;
+        int r = 2 * i + 2;
+    
+        if (l < n && arr[l] > arr[largest])
+            largest = l;
+    
+        if (r < n && arr[r] > arr[largest])
+            largest = r;
+    
+        if (largest != i) {
+            int swap = arr[i];
+            arr[i] = arr[largest];
+            arr[largest] = swap;
+            heapify(arr, n, largest);
+        }
+    }
+    
+    public void heapSort(int arr[]) {
+        int n = arr.length;
+    
+        for (int i = n / 2 - 1; i >= 0; i--) {
+            heapify(arr, n, i);
+        }
+    
+        for (int i = n - 1; i >= 0; i--) {
+            int temp = arr[0];
+            arr[0] = arr[i];
+            arr[i] = temp;
+            heapify(arr, i, 0);
+        }
+    }
+                    </code></pre>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <!-- Add these just before your PrismJS include -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/components/prism-java.min.js"></script>
+
+    <!-- Then include PrismJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/prism.min.js"></script>
+
+    <script src="{{ url_for('static', filename='js/heap_sort.js') }}"></script>
+</body>
+</html>
