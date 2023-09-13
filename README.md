@@ -101,6 +101,11 @@ This project is configured to be easily deployed on AWS Lambda using [Zappa](htt
     zappa deploy dev
     ```
 
+4. Undeploy the application
+    ```bash
+    zappa undeploy dev
+    ```
+
 For more detailed information, please refer to [this guide](https://github.com/zappa/Zappa).
 
 ## Contributing
