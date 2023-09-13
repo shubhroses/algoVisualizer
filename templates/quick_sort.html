@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://github.com/processing/p5.js/releases/download/v1.7.0/p5.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap JavaScript and Popper.js (optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/themes/prism-okaidia.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button id="back-to-home" class="btn btn-dark transition" >Home</button>
+          </div>
+        </div>
+      </nav>
+
+    <title>Sorting Algorithm Visualizer</title>
+
+</head>
+<body style="background-color: white;">
+    <div class="container">
+        <div class="jumbotron">
+            <h1 class="display-4">Quick Sort</h1>
+
+            <div class="btn-group" role="group" id="fps-button-group">
+                <button type="button" class="btn btn-secondary" data-fps="1">1 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="2">2 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="3">3 fps</button>
+                <button type="button" class="btn btn-secondary active" data-fps="5">5 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="10">10 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="25">25 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="50">50 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="100">100 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="500">500 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="1000">1000 fps</button>
+                <button type="button" class="btn btn-secondary" data-fps="2000">2000 fps</button>
+              </div>
+              
+              
+
+            <input type="range" id="element-slider" min="1" max="500" value="100" style="width: 92%; color: #000;">
+            <span id="elements-display">25</span> Bars
+
+            <button type="button" id="start-pause" class="btn btn-dark transition">Start</button>
+            <button type="button" id="reset-btn" class="btn btn-dark transition">Reset</button>
+            
+        </div>
+    </div>
+    
+    <div id="visualization-area">
+        <!-- Area where the sorting visualization will happen -->
+    </div>
+
+    <!-- Add this new section for the description -->
+    <div class="container">
+        <div class="description-section">
+            <h2>Description</h2>
+            <p>
+                Quick Sort is a widely-used sorting algorithm that's known for its fast average-case performance. It works by partitioning the array into smaller sub-arrays and then recursively sorting those sub-arrays.
+            </p>
+
+            <h3>How it Works:</h3>
+            <ol>
+                <li><strong>Partition:</strong> Choose a 'pivot' element from the array and partition the array into two sub-arrays: one with elements smaller than the pivot and another with elements larger.</li>
+                <li><strong>Recursive Sort:</strong> Recursively apply Quick Sort to both sub-arrays.</li>
+                <li><strong>Combine:</strong> Since the sub-arrays are sorted in place, no combining step is needed.</li>
+            </ol>
+
+            <p>
+                The choice of the pivot selection and partitioning schemes greatly affect the algorithm's performance.
+            </p>
+
+            <h3>Key Features:</h3>
+            <ul>
+                <li><strong>Not Stable:</strong> By default, Quick Sort is not a stable sorting algorithm, meaning the relative order of equal elements may change during the sort.</li>
+                <li><strong>Adaptive:</strong> While the worst-case time complexity is quadratic, it performs well on average, especially for large data sets.</li>
+                <li><strong>In-Place Sorting:</strong> Quick Sort is an in-place sorting algorithm and usually doesn't require additional memory, making its average space complexity O(log n).</li>
+            </ul>
+
+            <p>
+                In summary, Quick Sort is often preferred for its efficient average-case performance, but its worst-case performance can be problematic. It's not stable and not well-suited for small arrays.
+            </p>
+
+            <p>
+                Time Complexity: O(n<sup>2</sup>) for worst-case, O(n log n) for average-case and best-case.
+            </p>
+
+        </div>
+    </div>
+
+    <!-- Code Section -->
+    <div class="container">
+        <div class="code-section">
+            <h2 style="color: white;">Implementation</h2>
+            <ul class="nav nav-tabs" id="codeTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="javascript-tab" data-bs-toggle="tab" href="#javascript" role="tab">JavaScript</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="python-tab" data-bs-toggle="tab" href="#python" role="tab">Python</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="java-tab" data-bs-toggle="tab" href="#java" role="tab">Java</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="javascript" role="tabpanel">
+                    <pre><code class="language-javascript">
+    function quickSort(arr, low, high) {
+        if (low < high) {
+            let pivotIndex = partition(arr, low, high);
+            quickSort(arr, low, pivotIndex);
+            quickSort(arr, pivotIndex + 1, high);
+        }
+    }
+    function partition(arr, low, high) {
+        let pivot = arr[low];
+        let left = low;
+        let right = high;
+        while (true) {
+            while (arr[left] < pivot) left++;
+            while (arr[right] > pivot) right--;
+            if (left >= right) return right;
+            [arr[left], arr[right]] = [arr[right], arr[left]];
+        }
+    }
+                    </code></pre>
+                </div>
+                <div class="tab-pane fade" id="python" role="tabpanel">
+                    <pre><code class="language-python">
+    def quick_sort(arr, low, high):
+        if low < high:
+            pivot_index = partition(arr, low, high)
+            quick_sort(arr, low, pivot_index)
+            quick_sort(arr, pivot_index + 1, high)
+
+    def partition(arr, low, high):
+        pivot = arr[low]
+        left = low
+        right = high
+        while True:
+            while arr[left] < pivot: left += 1
+            while arr[right] > pivot: right -= 1
+            if left >= right: return right
+            arr[left], arr[right] = arr[right], arr[left]
+                    </code></pre>
+                </div>
+                <div class="tab-pane fade" id="java" role="tabpanel">
+                    <pre><code class="language-java">
+    public void quickSort(int[] arr, int low, int high) {
+        if (low < high) {
+            int pivotIndex = partition(arr, low, high);
+            quickSort(arr, low, pivotIndex);
+            quickSort(arr, pivotIndex + 1, high);
+        }
+    }
+
+    public int partition(int[] arr, int low, int high) {
+        int pivot = arr[low];
+        int left = low;
+        int right = high;
+        while (true) {
+            while (arr[left] < pivot) left++;
+            while (arr[right] > pivot) right--;
+            if (left >= right) return right;
+            int temp = arr[left];
+            arr[left] = arr[right];
+            arr[right] = temp;
+        }
+    }
+                    </code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add these just before your PrismJS include -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/components/prism-java.min.js"></script>
+
+    <!-- Then include PrismJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.26.0/prism.min.js"></script>
+
+    <script src="{{ url_for('static', filename='js/quick_sort.js') }}"></script>
+</body>
+</html>

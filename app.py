@@ -26,5 +26,10 @@ def merge_sort():
     # your logic here
     return render_template('merge_sort.html')
 
+@app.route('/quick_sort')
+def quick_sort():
+    # your logic here
+    return render_template('quick_sort.html')
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5001)

@@ -79,66 +79,53 @@ function draw() {
     drawFrame();
 
     if (currentIndex < steps.length - 1) {
-        currentIndex = Math.min(currentIndex + Math.ceil(0.01 * lengthOfArray), steps.length - 1);
+        currentIndex = Math.min(currentIndex + Math.ceil(0.04 * lengthOfArray), steps.length - 1);
     }
 }
 
-// Helper function to merge two sorted arrays
-function merge(left, right, arr, startIdx, steps) {
-    let i = 0, j = 0, k = startIdx;
-  
-    while (i < left.length && j < right.length) {
-      if (left[i] < right[j]) {
-        arr[k] = left[i++];
-      } else {
-        arr[k] = right[j++];
-      }
-      steps.push({ array: arr.slice(), colorFlag: k });
-      k++;
-    }
-  
-    // Handle leftover elements
-    while (i < left.length) {
-      arr[k] = left[i++];
-      steps.push({ array: arr.slice(), colorFlag: k });
-      k++;
-    }
-  
-    while (j < right.length) {
-      arr[k] = right[j++];
-      steps.push({ array: arr.slice(), colorFlag: k });
-      k++;
-    }
-  }
-  
-  // Merge sort function that keeps track of steps
+// The main sortSteps function that initializes the Quick Sort
 function sortSteps(arr) {
-    const steps = [{ array: arr.slice(), colorFlag: -1 }];
-  
-    function recursiveSortSteps(arr, startIdx, endIdx) {
-      if (endIdx - startIdx <= 1) return;
-  
-      const mid = Math.floor((startIdx + endIdx) / 2);
-  
-      recursiveSortSteps(arr, startIdx, mid);
-      recursiveSortSteps(arr, mid, endIdx);
-  
-      const left = arr.slice(startIdx, mid);
-      const right = arr.slice(mid, endIdx);
-  
-      merge(left, right, arr, startIdx, steps);
-    }
-  
-    recursiveSortSteps(arr, 0, arr.length);
-  
-    // Set colorFlag of the last step to -1
-    if (steps.length > 0) {
-      steps[steps.length - 1].colorFlag = -1;
-    }
-  
+    steps = []; // Clear previous steps
+    steps.push({ array: [...arr], colorFlag: -1 });
+    quickSortSteps(arr, 0, arr.length - 1);
+    steps.push({ array: [...arr], colorFlag: -1 });  // Final sorted array
     return steps;
 }
-  
+
+// The actual Quick Sort function, modified to record steps
+function quickSortSteps(arr, low, high) {
+    if (low < high) {
+        let pivotIndex = partition(arr, low, high);
+        
+        // Recursively sort the elements before and after partition
+        quickSortSteps(arr, low, pivotIndex - 1);
+        quickSortSteps(arr, pivotIndex + 1, high);
+    }
+}
+
+// Modified partition function
+function partition(arr, low, high) {
+    let pivot = arr[high];
+    let i = low - 1;
+
+    for (let j = low; j <= high - 1; j++) {
+        // Record the array state before any swaps
+        steps.push({ array: [...arr], colorFlag: j });
+
+        if (arr[j] < pivot) {
+            i++;
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+    }
+
+    // Swap the pivot element with the element at i + 1 to put it in the right position
+    [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+    steps.push({ array: [...arr], colorFlag: i + 1 });  // Record the array state after the final swap
+
+    return i + 1;
+}
+
+
 document.addEventListener("DOMContentLoaded", function() {
     const startPauseBtn = document.getElementById("start-pause");
     const numElementsInput = document.getElementById("element-slider");
