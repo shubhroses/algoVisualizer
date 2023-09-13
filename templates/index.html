@@ -21,28 +21,69 @@
 </head>
 <body>
     <div class="container">
-        <div class="jumbotron"> 
-            <h1 class="display-4">Sorting Algorithms</h1>
+        <div class="jumbotron">
+            <h1 class="display-4">Sorting Algorithms Visualizer</h1>
+            
+            <hr class="my-4">
+            
+            <p>Learn how different sorting algorithms work and visualize their step-by-step execution. Compare different sorting algorithms to see how they differ in performance and complexity.</p>
+
             <nav class="main-nav">
                 <ul>
                     <li class="bg-secondary text-white">
                         <a href="/dev/bubble_sort" class="text-decoration-none text-white">Bubble Sort</a>
-                      </li>
-                      <li class="bg-secondary text-white">
+                    </li>
+                    <li class="bg-secondary text-white">
                         <a href="/dev/selection_sort" class="text-decoration-none text-white">Selection Sort</a>
-                      </li>
-                      <li class="bg-secondary text-white">
+                    </li>
+                    <li class="bg-secondary text-white">
                         <a href="/dev/merge_sort" class="text-decoration-none text-white">Merge Sort</a>
-                      </li>
-                      <li class="bg-secondary text-white">
+                    </li>
+                    <li class="bg-secondary text-white">
                         <a href="/dev/quick_sort" class="text-decoration-none text-white">Quick Sort</a>
-                      </li>
-                      <li class="bg-secondary text-white">
+                    </li>
+                    <li class="bg-secondary text-white">
                         <a href="/dev/heap_sort" class="text-decoration-none text-white">Heap Sort</a>
-                      </li>
+                    </li>
                     <!-- Add more algorithms here -->
                 </ul>
             </nav>
+            <div class="jumbotron">
+              <!-- ... existing content ... -->
+  
+              <hr class="my-4">
+              
+              <h2>Sorting Algorithms: A Deep Dive</h2>
+              <p>
+                  <strong>Sorting algorithms</strong> are used to sort a data structure according to a specific order relationship, such as numerical or lexicographical order. This operation is a cornerstone in the field of computer science, and countless methods have been developed to optimize this procedure.
+              </p>
+  
+              <p>
+                  Nowadays, there are hundreds of different sorting algorithms, each with its unique characteristics. These algorithms are often classified based on their <strong>space complexity</strong> and <strong>time complexity</strong>.
+              </p>
+  
+              <p>
+                  These complexities are represented using asymptotic notations, often denoted by <strong>O, Θ, and Ω</strong>, which respectively represent the upper, tight, and lower bounds of the algorithm's complexity.
+              </p>
+  
+              <h3>Categories of Sorting Algorithms</h3>
+              <ul>
+                <li>
+                    <strong>Logarithmic:</strong> The complexity is proportional to the binary logarithm of n. An example is <strong>Quick sort</strong>, with complexities O(n × log n).
+                </li>
+                <li>
+                    <strong>Quadratic:</strong> The complexity is proportional to n<sup>2</sup>. A quintessential example is <strong>Bubble sort</strong>, with a time complexity of O(n<sup>2</sup>).
+                </li>
+            </ul>
+
+  
+              <p>
+                  These complexities can vary depending on different cases: <strong>best case, average case,</strong> and <strong>worst case</strong>.
+              </p>
+  
+              <p>
+                  Understanding sorting algorithms can be quite challenging. That's why we believe that visualizing these algorithms can offer a fun and effective way to grasp their inner workings.
+              </p>
         </div>
     </div>
     <script src="{{ url_for('static', filename='js/menu.js') }}"></script>

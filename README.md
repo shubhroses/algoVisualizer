@@ -113,6 +113,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Contact
 
-- **Your Name** - [GitHub](https://github.com/yourusername)
+- **Shubhrose Singh** - [GitHub](https://github.com/shubhroses)
 
 For any questions, feel free to open an issue or pull request. Feedback and contributions are welcome!
