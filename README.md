@@ -78,8 +78,8 @@ The run should report 26 passed.
 
 Before deploying to your own AWS account, edit these keys:
 
-- `profile_name`: the AWS CLI profile to deploy with.
-- `s3_bucket`: a bucket of your own for the deployment package.
+- `profile_name`: the AWS CLI profile to deploy with (the file says `default`).
+- `s3_bucket`: a bucket of your own for the deployment package. The value in the file is a placeholder.
 - `runtime`: currently `python3.8`, which AWS Lambda deprecated in October 2024. Set a runtime that AWS still supports. The pinned Zappa 0.57.0 only runs on Python 3.7 to 3.10, so a runtime newer than `python3.10` also needs a newer Zappa release.
 
 Then, from the activated virtual environment:
