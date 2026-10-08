@@ -1,123 +1,101 @@
 # Sorting Algorithm Visualizer
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+A small web app that animates five sorting algorithms as colored bars: bubble sort, selection sort, merge sort, quick sort and heap sort. Flask serves the pages and the animation runs in the browser with p5.js.
 
-## Overview
+The app was deployed to AWS Lambda and API Gateway with [Zappa](https://github.com/zappa/Zappa), and the Zappa settings are still in the repository. That deployment has since been taken down, so there is no live demo. To try the app, run it locally as described below.
 
-Sorting Algorithm Visualizer is a web application designed to help you understand the inner workings of various sorting algorithms. This project is hosted on AWS Lambda, making it highly scalable and cost-efficient. The application provides visual representations and code implementations for the following sorting algorithms:
+![Quick sort page showing the frame-rate buttons, the bar-count slider and the sorted bars](static/visualization.png)
 
-- Bubble Sort
-- Heap Sort
-- Merge Sort
-- Quick Sort
-- Selection Sort
+## What it does
 
-**Live Website**: [Sorting Algorithm Visualizer](https://pfzk1lyri2.execute-api.us-east-1.amazonaws.com/dev/)
+The home page links to one page per algorithm. Each algorithm page has:
 
-![Demo Screenshot](static/visualization.png)
+- A canvas of bars, one per array element. The height and color of a bar come from the element's value. The element the algorithm is working on at each step (for example the one being compared or written) is drawn in black.
+- Frame-rate buttons from 1 to 2000 fps (default 5). p5.js draws at most once per screen refresh, so the settings above the display's refresh rate behave the same.
+- A slider for the number of bars, from 1 to 500 (default 25).
+- A button that switches between Start and Pause, and a Reset button.
+- A written description of the algorithm and code listings for it in JavaScript, Python and Java.
+- A Home link back to the list of algorithms.
 
-## Table of Contents
+Moving the slider or pressing Reset generates a new shuffled array of the values 1 to n.
 
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [Deployment with Zappa](#deployment-with-zappa)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+## How it works
 
-## Features
+- `app.py` is a Flask app with six routes: `/` and one per algorithm (`/bubble_sort`, `/selection_sort`, `/merge_sort`, `/quick_sort`, `/heap_sort`). Each route only renders a template. There are no API endpoints and nothing is sorted on the server.
+- Each algorithm page loads its own script from `static/js/`. When Start is pressed, the script runs the sort on a copy of the array and records a snapshot of the array, plus the index to highlight, at every step. The p5.js `draw()` loop then plays the snapshots back at the selected frame rate, advancing more snapshots per frame as the array gets larger.
+- Links between pages and to the files under `static/` are built with Flask's `url_for`, so they follow the path the app is served under: `/` locally, `/dev/` behind the API Gateway stage.
+- The templates load Bootstrap, Prism and p5.js from public URLs, so the pages need internet access even when the app runs locally.
 
-- Interactive UI to choose different sorting algorithms.
-- Visual representation of each step of the sorting process.
-- Code snippets in multiple programming languages (JavaScript, Python, Java).
-- In-depth description and key features of each algorithm.
+## Repository layout
 
-## Technology Stack
+| Path | Contents |
+| --- | --- |
+| `app.py` | Flask application and routes |
+| `templates/` | `index.html` and one template per algorithm |
+| `static/js/` | browser scripts, mainly one p5.js sketch per algorithm (step recording and playback) |
+| `static/css/` | page styles |
+| `static/visualization.png` | the screenshot above |
+| `tests/test_routes.py` | route and link checks, run with pytest |
+| `pytest.ini` | pytest settings |
+| `zappa_settings.json` | Zappa configuration for the `dev` stage |
+| `requirements.txt` | pinned dependencies: Flask, Flask-Cors, Zappa and the packages they depend on |
 
-- **Frontend**: HTML, CSS, JavaScript
-- **Backend**: Flask
-- **Deployment**: AWS Lambda via Zappa
+## Run locally
 
-## Getting Started
+You need Python 3 and pip.
 
-### Prerequisites
+```bash
+git clone https://github.com/shubhroses/algoVisualizer.git
+cd algoVisualizer
+python3 -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python app.py
+```
 
-- Python 3.x
-- pip
-- virtualenv
-- AWS CLI configured
+Then open http://127.0.0.1:5001/.
 
-### Installation
+`requirements.txt` is a pinned list from September 2023. Besides Flask it installs Zappa and the AWS libraries Zappa depends on. `app.py` itself only imports Flask and Flask-Cors, so `pip install Flask Flask-Cors` is enough if you only want to run the app locally.
 
-1. Clone the repository
-    ```bash
-    git clone https://github.com/yourusername/sorting-algorithm-visualizer.git
-    ```
+Checked in October 2026 on macOS: the pinned versions install on Python 3.10, 3.13 and 3.14, and the app and its tests run on all three. The app and the tests also run with the current Flask release (3.1) on Python 3.13. Zappa itself supports fewer Python versions, as the deployment section explains.
 
-2. Create a virtual environment
-    ```bash
-    virtualenv venv
-    ```
+## Run the tests
 
-3. Activate the virtual environment
-    - On macOS and Linux:
-        ```bash
-        source venv/bin/activate
-        ```
-    - On Windows:
-        ```bash
-        .\venv\Scripts\activate
-        ```
+In the same virtual environment:
 
-4. Install dependencies
-    ```bash
-    pip install -r requirements.txt
-    ```
+```bash
+pip install pytest
+pytest
+```
 
-5. Run the Flask application
-    ```bash
-    flask run
-    ```
+The run should report 26 passed.
 
-## Deployment with Zappa
+`tests/test_routes.py` uses Flask's test client, so no server needs to be running. It checks that every page returns 200, that every link on a page that points back into the app (other pages and the files under `static/`) also returns 200, and that the home page and the algorithm pages link to each other. Each check runs twice: with the app at the site root, and with the app mounted under `/dev`, the way it sits behind an API Gateway stage. The tests do not run the JavaScript.
 
-This project is configured to be easily deployed on AWS Lambda using [Zappa](https://github.com/Miserlou/Zappa). Follow these steps to deploy:
+## Deploy to AWS Lambda with Zappa
 
-1. Install Zappa
-    ```bash
-    pip install zappa
-    ```
+`zappa_settings.json` defines one stage, `dev`, which packages `app.app` for Lambda and exposes it through API Gateway. Deployment is not covered by the tests.
 
-2. Initialize Zappa settings
-    ```bash
-    zappa init
-    ```
+Before deploying to your own AWS account, edit these keys:
 
-3. Deploy the application
-    ```bash
-    zappa deploy dev
-    ```
+- `profile_name`: the AWS CLI profile to deploy with.
+- `s3_bucket`: a bucket of your own for the deployment package.
+- `runtime`: currently `python3.8`, which AWS Lambda deprecated in October 2024. Set a runtime that AWS still supports. The pinned Zappa 0.57.0 only runs on Python 3.7 to 3.10, so a runtime newer than `python3.10` also needs a newer Zappa release.
 
-4. Undeploy the application
-    ```bash
-    zappa undeploy dev
-    ```
+Then, from the activated virtual environment:
 
-For more detailed information, please refer to [this guide](https://github.com/zappa/Zappa).
+```bash
+zappa deploy dev      # first deployment
+zappa update dev      # redeploy after changes
+zappa undeploy dev    # remove the deployment
+```
 
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+API Gateway serves the app under the stage name, as in `https://<api-id>.execute-api.<region>.amazonaws.com/dev/`. The pages build their links with `url_for`, so they work under that prefix whatever the stage is called.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details.
+MIT. See [LICENSE](LICENSE).
 
-## Contact
+## Author
 
-- **Shubhrose Singh** - [GitHub](https://github.com/shubhroses)
-
-For any questions, feel free to open an issue or pull request. Feedback and contributions are welcome!
+Shubhrose Singh - [github.com/shubhroses](https://github.com/shubhroses)
