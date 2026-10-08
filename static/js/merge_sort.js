@@ -145,11 +145,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const fpsButtonGroup = document.getElementById("fps-button-group");
     const elementDisplay = document.getElementById("elements-display");
     const resetBtn = document.getElementById("reset-btn");
-    const backButton = document.getElementById("back-to-home");
-
-    backButton.addEventListener("click", function() {
-        window.location.href = "/dev/";
-    });
 
     fpsButtonGroup.addEventListener("click", function(event) {
         const target = event.target;
