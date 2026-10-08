@@ -1,0 +1,19 @@
+# Python bytecode and test caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Archives Zappa writes to the project directory when packaging
+*.zip
+*.tar.gz
+
+# Editor and OS files
+.DS_Store
+.idea/
+.vscode/
+*.swp
