@@ -41,11 +41,12 @@ Moving the slider or pressing Reset generates a new shuffled array of the values
 | `tests/test_scripts.py` | checks on the scripts each page loads, run with pytest |
 | `pytest.ini` | pytest settings |
 | `zappa_settings.json` | Zappa configuration for the `dev` stage |
-| `requirements.txt` | pinned dependencies: Flask, Flask-Cors, Zappa and the packages they depend on |
+| `requirements.txt` | what the app needs to run: Flask and Flask-Cors, pinned |
+| `requirements-deploy.txt` | the pinned environment of the 2023 Zappa deployment, historical and unaudited |
 
 ## Run locally
 
-You need Python 3 and pip.
+You need Python 3.9 or newer and pip.
 
 ```bash
 git clone https://github.com/shubhroses/algoVisualizer.git
@@ -58,9 +59,9 @@ python app.py
 
 Then open http://127.0.0.1:5001/.
 
-`requirements.txt` is a pinned list from September 2023. Besides Flask it installs Zappa and the AWS libraries Zappa depends on. `app.py` itself only imports Flask and Flask-Cors, so `pip install Flask Flask-Cors` is enough if you only want to run the app locally.
+`requirements.txt` pins the two packages `app.py` imports: Flask 3.1.3 and Flask-Cors 6.0.5. pip also installs the packages those two depend on (Werkzeug, Jinja2, MarkupSafe, itsdangerous, click and blinker) at the newest versions they allow. Zappa is not installed. It is only needed for deployment, which has its own section below.
 
-Checked in October 2026 on macOS: the pinned versions install on Python 3.10, 3.13 and 3.14, and the app and its tests run on all three. The app and the tests also run with the current Flask release (3.1) on Python 3.13. Zappa itself supports fewer Python versions, as the deployment section explains.
+Checked in October 2026 on macOS: `requirements.txt` installs on Python 3.10, 3.13 and 3.14, the tests pass on all three, and `pip-audit -r requirements.txt` reports no known vulnerabilities.
 
 ## Run the tests
 
@@ -85,13 +86,19 @@ The test files use Flask's test client, so no server and no browser need to be r
 
 `zappa_settings.json` defines one stage, `dev`, which packages `app.app` for Lambda and exposes it through API Gateway. Deployment is not covered by the tests.
 
-Before deploying to your own AWS account, edit these keys:
+`requirements.txt` does not install Zappa. `requirements-deploy.txt` holds the 34 pins the app was deployed from in September 2023: Zappa 0.57.0, the AWS libraries it depends on, and Flask 2.3.3 with its dependencies. That file is historical and unaudited. It is kept as a record of the deployment, nothing checks it, and in October 2026 `pip-audit` reported known vulnerabilities in 10 of its 34 packages, Flask, Flask-Cors, Werkzeug and Jinja2 among them. Zappa packages the virtual environment it is run from, so deploying from these pins would put those versions on Lambda.
+
+To rebuild that environment anyway, run `pip install -r requirements-deploy.txt` in a separate virtual environment on Python 3.8, 3.9 or 3.10. The Flask 2.3.3 pin needs at least Python 3.8, and Zappa 0.57.0 refuses to run on anything newer than 3.10. This was checked on Python 3.10.
+
+For a new deployment, install a current Zappa release on top of `requirements.txt` instead: `pip install -r requirements.txt zappa`. In October 2026 that installs Zappa 0.63.0 on Python 3.13 without dependency conflicts. Deploying with it has not been tested.
+
+Before deploying to your own AWS account, edit these keys in `zappa_settings.json`:
 
 - `profile_name`: the AWS CLI profile to deploy with (the file says `default`).
 - `s3_bucket`: a bucket of your own for the deployment package. The value in the file is a placeholder.
-- `runtime`: currently `python3.8`, which AWS Lambda deprecated in October 2024. Set a runtime that AWS still supports. The pinned Zappa 0.57.0 only runs on Python 3.7 to 3.10, so a runtime newer than `python3.10` also needs a newer Zappa release.
+- `runtime`: currently `python3.8`, which AWS Lambda deprecated in October 2024. Set a runtime that AWS still supports. Zappa 0.57.0 does not run on anything newer than Python 3.10, so a newer runtime also needs a newer Zappa release.
 
-Then, from the activated virtual environment:
+Then, from the virtual environment that has Zappa installed:
 
 ```bash
 zappa deploy dev      # first deployment
