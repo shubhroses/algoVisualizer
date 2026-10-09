@@ -24,8 +24,8 @@ Moving the slider or pressing Reset generates a new shuffled array of the values
 - `app.py` is a Flask app with six routes: `/` and one per algorithm (`/bubble_sort`, `/selection_sort`, `/merge_sort`, `/quick_sort`, `/heap_sort`). Each route only renders a template. There are no API endpoints and nothing is sorted on the server.
 - Each algorithm page loads its own script from `static/js/`. When Start is pressed, the script runs the sort on a copy of the array and records a snapshot of the array, plus the index to highlight, at every step. The p5.js `draw()` loop then plays the snapshots back at the selected frame rate, advancing more snapshots per frame as the array gets larger.
 - Links between pages and to the files under `static/` are built with Flask's `url_for`, so they follow the path the app is served under: `/` locally, `/dev/` behind the API Gateway stage.
-- The templates load Bootstrap, Prism and p5.js from the jsDelivr and cdnjs CDNs, each at an exact version, so the pages need internet access even when the app runs locally.
-- The p5.js script tag carries a Subresource Integrity hash, so a browser refuses to run the file if it is not byte for byte the 1.7.0 release of `p5.min.js`. To change the p5.js version, change the URL in the five algorithm templates and replace the hash with `sha512-` followed by the output of `curl -s <url> | openssl dgst -sha512 -binary | openssl base64 -A`. cdnjs publishes the same value at `https://api.cdnjs.com/libraries/p5.js/1.7.0?fields=sri`.
+- The templates load Bootstrap 5.1.0 and Popper 2.9.3 from jsDelivr, and Prism 1.30.0 and p5.js 1.7.0 from cdnjs, so the pages need internet access even when the app runs locally.
+- Each of those script and stylesheet tags carries a Subresource Integrity hash, so a browser refuses a file that is not byte for byte the one the hash was taken from. The Bootstrap and Popper hashes are the ones Bootstrap published with its 5.1.0 release, and the Prism and p5.js hashes are the ones cdnjs publishes (for p5.js at `https://api.cdnjs.com/libraries/p5.js/1.7.0?fields=sri`). To change a version, change the URL in every template that has it and replace the hash with `sha512-` followed by the output of `curl -s <url> | openssl dgst -sha512 -binary | openssl base64 -A`.
 
 ## Repository layout
 
@@ -73,7 +73,7 @@ pip install pytest
 pytest
 ```
 
-The run should report 58 passed. Ten of those tests need [Node.js](https://nodejs.org/). If `node` is not on the PATH they are skipped and the run reports 48 passed, 10 skipped.
+The run should report 59 passed. Ten of those tests need [Node.js](https://nodejs.org/). If `node` is not on the PATH they are skipped and the run reports 49 passed, 10 skipped.
 
 The test files use Flask's test client, so no server and no browser need to be running.
 
@@ -83,7 +83,7 @@ The test files use Flask's test client, so no server and no browser need to be r
 
 The same file runs the `sortSteps` function of each p5.js sketch in `static/js/` under `node`, on the arrays above that have at least two elements, and checks that the last snapshot it records, the frame the animation ends on, is the sorted array. The drawing code in the sketches needs a browser and is not run.
 
-`tests/test_scripts.py` reads the tags out of each rendered page. It checks that every element id the page's own scripts look up with `getElementById` exists on that page. For the algorithm pages it also checks that Prism can highlight every listing: the page loads a Prism theme, the Prism core comes before the other Prism scripts, and every listing language outside the core has its component script. It checks that the p5.js script tag has an exact version in its URL, an integrity hash and `crossorigin="anonymous"`. Whether the hash matches the file is not something these tests can tell without network access. A browser checks that on every page load. The five algorithm pages share one layout, so one more test checks that they all load the same third-party files in the same way.
+`tests/test_scripts.py` reads the tags out of each rendered page. It checks that every element id the page's own scripts look up with `getElementById` exists on that page. For the algorithm pages it also checks that Prism can highlight every listing: the page loads a Prism theme, the Prism core comes before the other Prism scripts, and every listing language outside the core has its component script. It checks that every script and stylesheet a page loads from another site has an exact version in its URL, an integrity hash and `crossorigin="anonymous"`. Whether a hash matches its file is not something these tests can tell without network access. A browser checks that on every page load. The five algorithm pages share one layout, so one more test checks that they all load the same third-party files in the same way.
 
 ## Continuous integration
 

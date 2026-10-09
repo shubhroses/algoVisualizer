@@ -59,13 +59,6 @@ def prism_files(tags):
     return [url for url in urls if "prism" in url]
 
 
-def p5_script(tags):
-    """Return the attributes of the one script tag among `tags` that loads p5.js."""
-    scripts = [attrs for tag, attrs in tags if tag == "script"]
-    [p5] = [attrs for attrs in scripts if re.search(r"/p5(\.min)?\.js$", attrs.get("src") or "")]
-    return p5
-
-
 @pytest.mark.parametrize("page", PAGES)
 def test_scripts_find_their_elements(client, page):
     """Every id a page's own scripts look up has to exist on that page.
@@ -113,14 +106,15 @@ def test_algorithm_pages_load_the_same_third_party_files(client):
         assert third_party_files(tags_on(client, page)) == expected, f"{page} differs from {first}"
 
 
-@pytest.mark.parametrize("page", ALGORITHM_PAGES)
-def test_p5_is_pinned_and_integrity_checked(client, page):
-    """p5.js is loaded at an exact version, with a hash for the browser to check.
+@pytest.mark.parametrize("page", PAGES)
+def test_third_party_files_are_pinned_and_integrity_checked(client, page):
+    """Every file from another site has an exact version and a hash for the browser to check.
 
-    A browser checks the hash of a script from another site only if the
-    request is made with CORS, which is what crossorigin="anonymous" asks for.
+    A browser checks the hash of a file from another site only if the request
+    is made with CORS, which is what crossorigin="anonymous" asks for.
     """
-    p5 = p5_script(tags_on(client, page))
-    assert re.search(r"[/@]v?\d+\.\d+\.\d+/", p5["src"]), f"no exact version in {p5['src']}"
-    assert re.match(r"sha(256|384|512)-", p5.get("integrity") or ""), "p5.js has no integrity hash"
-    assert p5.get("crossorigin") == "anonymous"
+    for attrs in third_party_files(tags_on(client, page)):
+        url = url_of(attrs)
+        assert re.search(r"[/@]v?\d+\.\d+\.\d+/", url), f"no exact version in {url}"
+        assert re.match(r"sha(256|384|512)-", attrs.get("integrity") or ""), f"no hash for {url}"
+        assert attrs.get("crossorigin") == "anonymous", f"{url} is not requested with CORS"
