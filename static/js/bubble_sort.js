@@ -98,10 +98,9 @@ function sortSteps(arr) {
         }
         }
     }
-    // Set colorFlag of the last step to -1
-    if (steps.length > 0) {
-        steps[steps.length - 1].colorFlag = -1;
-    }
+    // Each snapshot above is taken before its comparison, so the last swap is
+    // not in any of them. End on the sorted array, with no bar highlighted.
+    steps.push({ array: [...tempArr], colorFlag: -1 });
 
   return steps;
 }

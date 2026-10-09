@@ -1,15 +1,23 @@
-"""Runs the code listings shown on the algorithm pages.
+"""Runs the sorting code in this repository outside the browser.
 
-Each algorithm page shows the algorithm in JavaScript, Python and Java. The
-tests take the Python and JavaScript listings out of the rendered page, run
-them on a set of small arrays and compare the results with sorted(). The Java
-listings are not run.
+Two kinds of code are covered:
 
-Each listing runs in a process of its own. A listing that never returns is
+- The listings on the algorithm pages. Each page shows the algorithm in
+  JavaScript, Python and Java. The tests take the Python and JavaScript
+  listings out of the rendered page and run them. The Java listings are not
+  run.
+- The p5.js sketches in static/js/. Each one has a function, sortSteps, that
+  records the snapshots its page plays back. The tests run that function.
+  The drawing code is not run.
+
+All of it runs on a set of small arrays, and the results are compared with
+sorted().
+
+Each piece of code runs in a process of its own. Code that never returns is
 then stopped by a timeout and reported as a failure, instead of hanging the
 test run.
 
-The JavaScript listings need node on the PATH. Without it they are skipped.
+The JavaScript needs node on the PATH. Without it those tests are skipped.
 """
 import itertools
 import json
@@ -36,6 +44,10 @@ SORT_CALLS = {
     },
     "/heap_sort": {"python": "heap_sort(arr)", "javascript": "heapSort(arr)"},
 }
+
+# A sketch registers a DOMContentLoaded handler while it loads. Outside a
+# browser this stand-in for document lets it load. The handler never runs.
+DOCUMENT_STUB = "const document = { addEventListener() {} };\n"
 
 # Every array of up to five values drawn from 1, 2 and 3. That covers the
 # empty array, the single-element arrays and every arrangement of repeated
@@ -106,25 +118,40 @@ def listing(page, language):
     return textwrap.dedent(collector.listings[language])
 
 
-def sort_inputs(language, code, call):
-    """Sort every input with `code` and return the results in order."""
-    script = SCRIPTS[language].format(code=code, inputs=json.dumps(INPUTS), call=call)
+def check_sorting(language, code, call, inputs=INPUTS):
+    """Sort every input by running `call` with `code` loaded, and check each result."""
+    script = SCRIPTS[language].format(code=code, inputs=json.dumps(inputs), call=call)
     try:
         finished = subprocess.run(
             COMMANDS[language], input=script.encode(), capture_output=True, timeout=TIMEOUT
         )
     except subprocess.TimeoutExpired as expired:
-        stuck_on = INPUTS[len((expired.stdout or b"").splitlines())]
+        stuck_on = inputs[len((expired.stdout or b"").splitlines())]
         message = f"did not finish sorting {stuck_on} within {TIMEOUT} seconds"
         raise AssertionError(message) from None
     assert finished.returncode == 0, finished.stderr.decode()
-    return [json.loads(line) for line in finished.stdout.splitlines()]
+    results = [json.loads(line) for line in finished.stdout.splitlines()]
+    assert len(results) == len(inputs)
+    for values, result in zip(inputs, results):
+        assert result == sorted(values), f"sorting {values} gave {result}"
 
 
 @pytest.mark.parametrize("language", ["python", pytest.param("javascript", marks=needs_node)])
 @pytest.mark.parametrize("page", SORT_CALLS)
 def test_listing_sorts(page, language):
-    results = sort_inputs(language, listing(page, language), SORT_CALLS[page][language])
-    assert len(results) == len(INPUTS)
-    for values, result in zip(INPUTS, results):
-        assert result == sorted(values), f"sorting {values} gave {result}"
+    check_sorting(language, listing(page, language), SORT_CALLS[page][language])
+
+
+@needs_node
+@pytest.mark.parametrize("page", SORT_CALLS)
+def test_animation_ends_on_the_sorted_array(page):
+    """The last snapshot is the frame that stays on screen when the animation ends."""
+    # Each page loads the sketch that is named after it.
+    with app.test_client().get(f"/static/js{page}.js") as response:
+        assert response.status_code == 200
+        sketch = response.get_data(as_text=True)
+    # With fewer than two bars there is nothing to sort, and not every sketch
+    # records a snapshot then.
+    inputs = [values for values in INPUTS if len(values) > 1]
+    last_snapshot = "arr = sortSteps(arr).pop().array"
+    check_sorting("javascript", DOCUMENT_STUB + sketch, last_snapshot, inputs)
