@@ -42,10 +42,20 @@ def tags_on(client, page):
     return collector.tags
 
 
+def url_of(attrs):
+    """Return the URL a script or link tag with these attributes loads, or ""."""
+    return attrs.get("src") or attrs.get("href") or ""
+
+
+def third_party_files(tags):
+    """Return the attributes of each script and link tag that loads from another site."""
+    assets = [attrs for tag, attrs in tags if tag in ("script", "link")]
+    return [attrs for attrs in assets if urlsplit(url_of(attrs)).netloc]
+
+
 def prism_files(tags):
     """Return the URLs of the Prism stylesheets and scripts among `tags`, in document order."""
-    assets = [attrs for tag, attrs in tags if tag in ("script", "link")]
-    urls = [attrs.get("src") or attrs.get("href") or "" for attrs in assets]
+    urls = [url_of(attrs) for attrs in third_party_files(tags)]
     return [url for url in urls if "prism" in url]
 
 
@@ -95,11 +105,12 @@ def test_prism_can_highlight_every_listing(client, page):
         assert component in scripts, f"{page} has a {language} listing but no {component}"
 
 
-def test_algorithm_pages_load_the_same_prism_files(client):
+def test_algorithm_pages_load_the_same_third_party_files(client):
+    """The five pages share one layout, so they load the same files in the same way."""
     first, *others = ALGORITHM_PAGES
-    expected = prism_files(tags_on(client, first))
+    expected = third_party_files(tags_on(client, first))
     for page in others:
-        assert prism_files(tags_on(client, page)) == expected, f"{page} differs from {first}"
+        assert third_party_files(tags_on(client, page)) == expected, f"{page} differs from {first}"
 
 
 @pytest.mark.parametrize("page", ALGORITHM_PAGES)
@@ -113,10 +124,3 @@ def test_p5_is_pinned_and_integrity_checked(client, page):
     assert re.search(r"[/@]v?\d+\.\d+\.\d+/", p5["src"]), f"no exact version in {p5['src']}"
     assert re.match(r"sha(256|384|512)-", p5.get("integrity") or ""), "p5.js has no integrity hash"
     assert p5.get("crossorigin") == "anonymous"
-
-
-def test_algorithm_pages_load_the_same_p5_script(client):
-    first, *others = ALGORITHM_PAGES
-    expected = p5_script(tags_on(client, first))
-    for page in others:
-        assert p5_script(tags_on(client, page)) == expected, f"{page} differs from {first}"

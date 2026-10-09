@@ -73,7 +73,7 @@ pip install pytest
 pytest
 ```
 
-The run should report 59 passed. Ten of those tests need [Node.js](https://nodejs.org/). If `node` is not on the PATH they are skipped and the run reports 49 passed, 10 skipped.
+The run should report 58 passed. Ten of those tests need [Node.js](https://nodejs.org/). If `node` is not on the PATH they are skipped and the run reports 48 passed, 10 skipped.
 
 The test files use Flask's test client, so no server and no browser need to be running.
 
@@ -83,7 +83,7 @@ The test files use Flask's test client, so no server and no browser need to be r
 
 The same file runs the `sortSteps` function of each p5.js sketch in `static/js/` under `node`, on the arrays above that have at least two elements, and checks that the last snapshot it records, the frame the animation ends on, is the sorted array. The drawing code in the sketches needs a browser and is not run.
 
-`tests/test_scripts.py` reads the tags out of each rendered page. It checks that every element id the page's own scripts look up with `getElementById` exists on that page. For the algorithm pages it also checks that Prism can highlight every listing: the page loads a Prism theme, the Prism core comes before the other Prism scripts, every listing language outside the core has its component script, and all five pages load the same Prism files. It checks that the p5.js script tag has an exact version in its URL, an integrity hash and `crossorigin="anonymous"`, and is the same on all five pages. Whether the hash matches the file is not something these tests can tell without network access. A browser checks that on every page load.
+`tests/test_scripts.py` reads the tags out of each rendered page. It checks that every element id the page's own scripts look up with `getElementById` exists on that page. For the algorithm pages it also checks that Prism can highlight every listing: the page loads a Prism theme, the Prism core comes before the other Prism scripts, and every listing language outside the core has its component script. It checks that the p5.js script tag has an exact version in its URL, an integrity hash and `crossorigin="anonymous"`. Whether the hash matches the file is not something these tests can tell without network access. A browser checks that on every page load. The five algorithm pages share one layout, so one more test checks that they all load the same third-party files in the same way.
 
 ## Continuous integration
 
