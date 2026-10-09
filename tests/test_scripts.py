@@ -59,6 +59,18 @@ def prism_files(tags):
     return [url for url in urls if "prism" in url]
 
 
+def layout(client, page):
+    """Return the tags of an algorithm page that carry attributes, in document order.
+
+    The description is written with plain tags, so this leaves out the one
+    part of the page that is meant to differ from the other algorithm pages.
+    The script tag for the page's own sketch is kept with its URL removed.
+    """
+    sketch = f"/static/js{page}.js"
+    tags = [(tag, attrs) for tag, attrs in tags_on(client, page) if attrs]
+    return [(tag, {} if attrs.get("src") == sketch else attrs) for tag, attrs in tags]
+
+
 @pytest.mark.parametrize("page", PAGES)
 def test_scripts_find_their_elements(client, page):
     """Every id a page's own scripts look up has to exist on that page.
@@ -98,12 +110,12 @@ def test_prism_can_highlight_every_listing(client, page):
         assert component in scripts, f"{page} has a {language} listing but no {component}"
 
 
-def test_algorithm_pages_load_the_same_third_party_files(client):
-    """The five pages share one layout, so they load the same files in the same way."""
+def test_algorithm_pages_share_one_layout(client):
+    """The five pages are copies of one layout: same files, same controls, same tabs."""
     first, *others = ALGORITHM_PAGES
-    expected = third_party_files(tags_on(client, first))
+    expected = layout(client, first)
     for page in others:
-        assert third_party_files(tags_on(client, page)) == expected, f"{page} differs from {first}"
+        assert layout(client, page) == expected, f"{page} differs from {first}"
 
 
 @pytest.mark.parametrize("page", PAGES)
