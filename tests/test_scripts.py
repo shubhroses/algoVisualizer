@@ -10,10 +10,14 @@ from urllib.parse import urlsplit
 import pytest
 
 from app import app
-from test_routes import PAGES
+from test_routes import ALGORITHM_PAGES, PAGES
 
 # document.getElementById("some-id") or document.getElementById('some-id')
 ELEMENT_LOOKUP = re.compile(r"""getElementById\(\s*["']([^"']+)["']\s*\)""")
+
+# The languages prism.min.js highlights by itself. Any other language comes
+# from a component script, which extends the core and so has to load after it.
+PRISM_CORE_LANGUAGES = {"markup", "css", "clike", "javascript"}
 
 
 class TagCollector(HTMLParser):
@@ -38,6 +42,13 @@ def tags_on(client, page):
     return collector.tags
 
 
+def prism_files(tags):
+    """Return the URLs of the Prism stylesheets and scripts among `tags`, in document order."""
+    assets = [attrs for tag, attrs in tags if tag in ("script", "link")]
+    urls = [attrs.get("src") or attrs.get("href") or "" for attrs in assets]
+    return [url for url in urls if "prism" in url]
+
+
 @pytest.mark.parametrize("page", PAGES)
 def test_scripts_find_their_elements(client, page):
     """Every id a page's own scripts look up has to exist on that page.
@@ -54,3 +65,31 @@ def test_scripts_find_their_elements(client, page):
         with client.get(src) as response:
             wanted = set(ELEMENT_LOOKUP.findall(response.get_data(as_text=True)))
         assert wanted <= ids, f"{src} looks up {sorted(wanted - ids)}, which {page} does not have"
+
+
+@pytest.mark.parametrize("page", ALGORITHM_PAGES)
+def test_prism_can_highlight_every_listing(client, page):
+    """Prism has what it needs to highlight every listing on the page.
+
+    That is a theme, the core script ahead of every other Prism script, and a
+    component for each listing language outside the core.
+    """
+    tags = tags_on(client, page)
+    files = [url.rsplit("/", 1)[-1] for url in prism_files(tags)]
+    scripts = [name for name in files if name.endswith(".js")]
+    assert any(name.endswith(".css") for name in files), f"{page} loads no Prism theme"
+    assert scripts[:1] == ["prism.min.js"], f"the first Prism script on {page} is not the core"
+
+    classes = [attrs.get("class") or "" for tag, attrs in tags if tag == "code"]
+    languages = {name[len("language-"):] for name in classes if name.startswith("language-")}
+    assert languages, f"{page} has no listings"
+    for language in languages - PRISM_CORE_LANGUAGES:
+        component = f"prism-{language}.min.js"
+        assert component in scripts, f"{page} has a {language} listing but no {component}"
+
+
+def test_algorithm_pages_load_the_same_prism_files(client):
+    first, *others = ALGORITHM_PAGES
+    expected = prism_files(tags_on(client, first))
+    for page in others:
+        assert prism_files(tags_on(client, page)) == expected, f"{page} differs from {first}"

@@ -14,7 +14,7 @@ The home page links to one page per algorithm. Each algorithm page has:
 - Frame-rate buttons from 1 to 2000 fps (default 5). p5.js draws at most once per screen refresh, so the settings above the display's refresh rate behave the same.
 - A slider for the number of bars, from 1 to 500 (default 25).
 - A button that switches between Start and Pause, and a Reset button.
-- A written description of the algorithm and code listings for it in JavaScript, Python and Java.
+- A written description of the algorithm and code listings for it in JavaScript, Python and Java, highlighted by Prism.
 - A Home link back to the list of algorithms.
 
 Moving the slider or pressing Reset generates a new shuffled array of the values 1 to n.
@@ -70,7 +70,7 @@ pip install pytest
 pytest
 ```
 
-The run should report 42 passed. Five of those tests need [Node.js](https://nodejs.org/). If `node` is not on the PATH they are skipped and the run reports 37 passed, 5 skipped.
+The run should report 48 passed. Five of those tests need [Node.js](https://nodejs.org/). If `node` is not on the PATH they are skipped and the run reports 43 passed, 5 skipped.
 
 The test files use Flask's test client, so no server and no browser need to be running.
 
@@ -78,7 +78,7 @@ The test files use Flask's test client, so no server and no browser need to be r
 
 `tests/test_sorting.py` takes the Python and JavaScript listings out of each rendered algorithm page and runs them on a few hundred arrays: every array of up to five values drawn from 1, 2 and 3, which includes the empty array, single elements and repeated values, and some longer arrays of random digits. Each result has to match Python's `sorted()`. A listing runs in a process of its own with a 10 second limit, so one that never returns fails its test instead of hanging the run. The JavaScript listings run under `node`. The Java listings are not run, and neither are the p5.js sketches in `static/js/`.
 
-`tests/test_scripts.py` reads the script tags out of each rendered page and checks that every element id the page's own scripts look up with `getElementById` exists on that page.
+`tests/test_scripts.py` reads the tags out of each rendered page. It checks that every element id the page's own scripts look up with `getElementById` exists on that page. For the algorithm pages it also checks that Prism can highlight every listing: the page loads a Prism theme, the Prism core comes before the other Prism scripts, every listing language outside the core has its component script, and all five pages load the same Prism files.
 
 ## Deploy to AWS Lambda with Zappa
 
