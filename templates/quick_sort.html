@@ -129,6 +129,8 @@
             while (arr[right] > pivot) right--;
             if (left >= right) return right;
             [arr[left], arr[right]] = [arr[right], arr[left]];
+            left++;
+            right--;
         }
     }
                     </code></pre>
@@ -150,6 +152,8 @@
             while arr[right] > pivot: right -= 1
             if left >= right: return right
             arr[left], arr[right] = arr[right], arr[left]
+            left += 1
+            right -= 1
                     </code></pre>
                 </div>
                 <div class="tab-pane fade" id="java" role="tabpanel">
@@ -173,6 +177,8 @@
             int temp = arr[left];
             arr[left] = arr[right];
             arr[right] = temp;
+            left++;
+            right--;
         }
     }
                     </code></pre>

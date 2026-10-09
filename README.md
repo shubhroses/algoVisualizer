@@ -36,6 +36,7 @@ Moving the slider or pressing Reset generates a new shuffled array of the values
 | `static/css/` | page styles |
 | `static/visualization.png` | the screenshot above |
 | `tests/test_routes.py` | route and link checks, run with pytest |
+| `tests/test_sorting.py` | runs the Python and JavaScript code listings from the pages, with pytest |
 | `pytest.ini` | pytest settings |
 | `zappa_settings.json` | Zappa configuration for the `dev` stage |
 | `requirements.txt` | pinned dependencies: Flask, Flask-Cors, Zappa and the packages they depend on |
@@ -68,9 +69,13 @@ pip install pytest
 pytest
 ```
 
-The run should report 26 passed.
+The run should report 36 passed. Five of those tests need [Node.js](https://nodejs.org/). If `node` is not on the PATH they are skipped and the run reports 31 passed, 5 skipped.
 
-`tests/test_routes.py` uses Flask's test client, so no server needs to be running. It checks that every page returns 200, that every link on a page that points back into the app (other pages and the files under `static/`) also returns 200, and that the home page and the algorithm pages link to each other. Each check runs twice: with the app at the site root, and with the app mounted under `/dev`, the way it sits behind an API Gateway stage. The tests do not run the JavaScript.
+Both test files use Flask's test client, so no server needs to be running.
+
+`tests/test_routes.py` checks that every page returns 200, that every link on a page that points back into the app (other pages and the files under `static/`) also returns 200, and that the home page and the algorithm pages link to each other. Each check runs twice: with the app at the site root, and with the app mounted under `/dev`, the way it sits behind an API Gateway stage.
+
+`tests/test_sorting.py` takes the Python and JavaScript listings out of each rendered algorithm page and runs them on a few hundred arrays: every array of up to five values drawn from 1, 2 and 3, which includes the empty array, single elements and repeated values, and some longer arrays of random digits. Each result has to match Python's `sorted()`. A listing runs in a process of its own with a 10 second limit, so one that never returns fails its test instead of hanging the run. The JavaScript listings run under `node`. The Java listings are not run, and neither are the p5.js sketches in `static/js/`.
 
 ## Deploy to AWS Lambda with Zappa
 
