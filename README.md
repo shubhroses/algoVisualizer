@@ -40,6 +40,7 @@ Moving the slider or pressing Reset generates a new shuffled array of the values
 | `tests/test_sorting.py` | runs the Python and JavaScript code listings from the pages, with pytest |
 | `tests/test_scripts.py` | checks on the scripts each page loads, run with pytest |
 | `pytest.ini` | pytest settings |
+| `.github/workflows/ci.yml` | GitHub Actions workflow: the tests and a dependency audit |
 | `zappa_settings.json` | Zappa configuration for the `dev` stage |
 | `requirements.txt` | what the app needs to run: Flask and Flask-Cors, pinned |
 | `requirements-deploy.txt` | the pinned environment of the 2023 Zappa deployment, historical and unaudited |
@@ -82,9 +83,18 @@ The test files use Flask's test client, so no server and no browser need to be r
 
 `tests/test_scripts.py` reads the tags out of each rendered page. It checks that every element id the page's own scripts look up with `getElementById` exists on that page. For the algorithm pages it also checks that Prism can highlight every listing: the page loads a Prism theme, the Prism core comes before the other Prism scripts, every listing language outside the core has its component script, and all five pages load the same Prism files. It checks that the p5.js script tag has an exact version in its URL, an integrity hash and `crossorigin="anonymous"`, and is the same on all five pages. Whether the hash matches the file is not something these tests can tell without network access. A browser checks that on every page load.
 
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on every push and pull request, with two jobs:
+
+- Tests: installs `requirements.txt` and pytest on Python 3.12, sets up Node.js 24 for the JavaScript listings, and runs `pytest`.
+- Dependency audit: runs `pip-audit -r requirements.txt`, which fails when a known vulnerability is published for Flask, Flask-Cors or a package they depend on.
+
+The workflow has read-only access to the repository, and the actions it uses are pinned to commit SHAs. `requirements-deploy.txt` is not audited.
+
 ## Deploy to AWS Lambda with Zappa
 
-`zappa_settings.json` defines one stage, `dev`, which packages `app.app` for Lambda and exposes it through API Gateway. Deployment is not covered by the tests.
+`zappa_settings.json` defines one stage, `dev`, which packages `app.app` for Lambda and exposes it through API Gateway. Deployment is not covered by the tests or by CI.
 
 `requirements.txt` does not install Zappa. `requirements-deploy.txt` holds the 34 pins the app was deployed from in September 2023: Zappa 0.57.0, the AWS libraries it depends on, and Flask 2.3.3 with its dependencies. That file is historical and unaudited. It is kept as a record of the deployment, nothing checks it, and in October 2026 `pip-audit` reported known vulnerabilities in 10 of its 34 packages, Flask, Flask-Cors, Werkzeug and Jinja2 among them. Zappa packages the virtual environment it is run from, so deploying from these pins would put those versions on Lambda.
 
