@@ -24,7 +24,8 @@ Moving the slider or pressing Reset generates a new shuffled array of the values
 - `app.py` is a Flask app with six routes: `/` and one per algorithm (`/bubble_sort`, `/selection_sort`, `/merge_sort`, `/quick_sort`, `/heap_sort`). Each route only renders a template. There are no API endpoints and nothing is sorted on the server.
 - Each algorithm page loads its own script from `static/js/`. When Start is pressed, the script runs the sort on a copy of the array and records a snapshot of the array, plus the index to highlight, at every step. The p5.js `draw()` loop then plays the snapshots back at the selected frame rate, advancing more snapshots per frame as the array gets larger.
 - Links between pages and to the files under `static/` are built with Flask's `url_for`, so they follow the path the app is served under: `/` locally, `/dev/` behind the API Gateway stage.
-- The templates load Bootstrap, Prism and p5.js from public URLs, so the pages need internet access even when the app runs locally.
+- The templates load Bootstrap, Prism and p5.js from the jsDelivr and cdnjs CDNs, each at an exact version, so the pages need internet access even when the app runs locally.
+- The p5.js script tag carries a Subresource Integrity hash, so a browser refuses to run the file if it is not byte for byte the 1.7.0 release of `p5.min.js`. To change the p5.js version, change the URL in the five algorithm templates and replace the hash with `sha512-` followed by the output of `curl -s <url> | openssl dgst -sha512 -binary | openssl base64 -A`. cdnjs publishes the same value at `https://api.cdnjs.com/libraries/p5.js/1.7.0?fields=sri`.
 
 ## Repository layout
 
@@ -70,7 +71,7 @@ pip install pytest
 pytest
 ```
 
-The run should report 48 passed. Five of those tests need [Node.js](https://nodejs.org/). If `node` is not on the PATH they are skipped and the run reports 43 passed, 5 skipped.
+The run should report 54 passed. Five of those tests need [Node.js](https://nodejs.org/). If `node` is not on the PATH they are skipped and the run reports 49 passed, 5 skipped.
 
 The test files use Flask's test client, so no server and no browser need to be running.
 
@@ -78,7 +79,7 @@ The test files use Flask's test client, so no server and no browser need to be r
 
 `tests/test_sorting.py` takes the Python and JavaScript listings out of each rendered algorithm page and runs them on a few hundred arrays: every array of up to five values drawn from 1, 2 and 3, which includes the empty array, single elements and repeated values, and some longer arrays of random digits. Each result has to match Python's `sorted()`. A listing runs in a process of its own with a 10 second limit, so one that never returns fails its test instead of hanging the run. The JavaScript listings run under `node`. The Java listings are not run, and neither are the p5.js sketches in `static/js/`.
 
-`tests/test_scripts.py` reads the tags out of each rendered page. It checks that every element id the page's own scripts look up with `getElementById` exists on that page. For the algorithm pages it also checks that Prism can highlight every listing: the page loads a Prism theme, the Prism core comes before the other Prism scripts, every listing language outside the core has its component script, and all five pages load the same Prism files.
+`tests/test_scripts.py` reads the tags out of each rendered page. It checks that every element id the page's own scripts look up with `getElementById` exists on that page. For the algorithm pages it also checks that Prism can highlight every listing: the page loads a Prism theme, the Prism core comes before the other Prism scripts, every listing language outside the core has its component script, and all five pages load the same Prism files. It checks that the p5.js script tag has an exact version in its URL, an integrity hash and `crossorigin="anonymous"`, and is the same on all five pages. Whether the hash matches the file is not something these tests can tell without network access. A browser checks that on every page load.
 
 ## Deploy to AWS Lambda with Zappa
 
