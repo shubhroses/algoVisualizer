@@ -36,9 +36,10 @@ Moving the slider or pressing Reset generates a new shuffled array of the values
 | `static/js/` | one p5.js sketch per algorithm (step recording and playback) |
 | `static/css/` | page styles |
 | `static/visualization.png` | the screenshot above |
+| `static/favicon.svg` | the browser tab icon |
 | `tests/test_routes.py` | route and link checks, run with pytest |
 | `tests/test_sorting.py` | runs the Python and JavaScript listings from the pages and the step recording of each sketch, with pytest |
-| `tests/test_scripts.py` | checks on the scripts each page loads, run with pytest |
+| `tests/test_scripts.py` | checks on the files each page loads and on its markup, run with pytest |
 | `pytest.ini` | pytest settings |
 | `.github/workflows/ci.yml` | GitHub Actions workflow: the tests and a dependency audit |
 | `zappa_settings.json` | Zappa configuration for the `dev` stage |
@@ -73,7 +74,7 @@ pip install pytest
 pytest
 ```
 
-The run should report 59 passed. Ten of those tests need [Node.js](https://nodejs.org/). If `node` is not on the PATH they are skipped and the run reports 49 passed, 10 skipped.
+The run should report 65 passed. Ten of those tests need [Node.js](https://nodejs.org/). If `node` is not on the PATH they are skipped and the run reports 55 passed, 10 skipped.
 
 The test files use Flask's test client, so no server and no browser need to be running.
 
@@ -83,7 +84,7 @@ The test files use Flask's test client, so no server and no browser need to be r
 
 The same file runs the `sortSteps` function of each p5.js sketch in `static/js/` under `node`, on the arrays above that have at least two elements, and checks that the last snapshot it records, the frame the animation ends on, is the sorted array. The drawing code in the sketches needs a browser and is not run.
 
-`tests/test_scripts.py` reads the tags out of each rendered page. It checks that every element id the page's own scripts look up with `getElementById` exists on that page. For the algorithm pages it also checks that Prism can highlight every listing: the page loads a Prism theme, the Prism core comes before the other Prism scripts, and every listing language outside the core has its component script. It checks that every script and stylesheet a page loads from another site has an exact version in its URL, an integrity hash and `crossorigin="anonymous"`. Whether a hash matches its file is not something these tests can tell without network access. A browser checks that on every page load. The five algorithm pages share one layout, so one more test compares every tag that has attributes across the five. That covers the files they load, the controls and the tabs, and leaves out the description text, which is written with plain tags.
+`tests/test_scripts.py` reads the tags out of each rendered page. It checks that every element id the page's own scripts look up with `getElementById` exists on that page. For the algorithm pages it also checks that Prism can highlight every listing: the page loads a Prism theme, the Prism core comes before the other Prism scripts, and every listing language outside the core has its component script. It checks that every script and stylesheet a page loads from another site has an exact version in its URL, an integrity hash and `crossorigin="anonymous"`. Whether a hash matches its file is not something these tests can tell without network access. A browser checks that on every page load. The five algorithm pages share one layout, so one more test compares every tag that has attributes across the five. That covers the files they load, the controls and the tabs, and leaves out the description text, which is written with plain tags. The last test checks that every page declares an icon. Without one a browser asks for `/favicon.ico`, which the app does not serve, and logs the 404.
 
 ## Continuous integration
 

@@ -1,4 +1,4 @@
-"""Checks on the scripts each page loads, read from the rendered HTML.
+"""Checks on the files each page loads and on its markup, read from the rendered HTML.
 
 No browser is involved. The checks cover what can be read from the markup
 and from the script files themselves.
@@ -130,3 +130,10 @@ def test_third_party_files_are_pinned_and_integrity_checked(client, page):
         assert re.search(r"[/@]v?\d+\.\d+\.\d+/", url), f"no exact version in {url}"
         assert re.match(r"sha(256|384|512)-", attrs.get("integrity") or ""), f"no hash for {url}"
         assert attrs.get("crossorigin") == "anonymous", f"{url} is not requested with CORS"
+
+
+@pytest.mark.parametrize("page", PAGES)
+def test_page_declares_an_icon(client, page):
+    """Without an icon link a browser asks for /favicon.ico, which the app does not serve."""
+    links = [attrs for tag, attrs in tags_on(client, page) if tag == "link"]
+    assert any(attrs.get("rel") == "icon" for attrs in links), f"{page} has no icon link"
